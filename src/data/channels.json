@@ -1,0 +1,19 @@
+[
+    {
+      "name": "General",
+      "isPrivate": false
+    },
+    {
+      "name": "Random",
+      "isPrivate": false
+    },
+    {
+      "name": "Project Discussion",
+      "isPrivate": true
+    },
+    {
+      "name": "Support",
+      "isPrivate": false
+    }
+  ]
+  

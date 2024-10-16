@@ -1,0 +1,23 @@
+[
+    {
+      "username": "Alice",
+      "password": "apple123",
+      "isLoggedIn": false
+    },
+    {
+      "username": "Bob",
+      "password": "banana456",
+      "isLoggedIn": true
+    },
+    {
+      "username": "Charlie",
+      "password": "cherry789",
+      "isLoggedIn": false
+    },
+    {
+      "username": "Dana",
+      "password": "datefruit101",
+      "isLoggedIn": true
+    }
+  ]
+  

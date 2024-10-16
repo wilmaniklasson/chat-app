@@ -1,0 +1,31 @@
+[
+    {
+      "senderId": "670fc0d4deee04fdc810dd9c",
+      "recipientId": null,
+      "channelId": "670fc126deee04fdc810dda6",
+      "content": "Hello everyone in the channel!",
+      "timestamp": "2024-10-16T12:00:00Z"
+    },
+    {
+      "senderId": "670fc0d4deee04fdc810dd9a",
+      "recipientId": "670fc0d4deee04fdc810dd99",
+      "channelId": null,
+      "content": "Hey Bob, how are you?",
+      "timestamp": "2024-10-16T12:01:00Z"
+    },
+    {
+      "senderId": "670fc0d4deee04fdc810dd9b",
+      "recipientId": null,
+      "channelId": "670fc126deee04fdc810dda7",
+      "content": "Welcome to the General channel!",
+      "timestamp": "2024-10-16T12:02:00Z"
+    },
+    {
+      "senderId": "670fc0d4deee04fdc810dd99",
+      "recipientId": "670fc0d4deee04fdc810dd9a",
+      "channelId": null,
+      "content": "Don't forget about the meeting tomorrow!",
+      "timestamp": "2024-10-16T12:03:00Z"
+    }
+  ]
+  

@@ -6,7 +6,6 @@ function App() {
 		<>
 			<header>
 				<h1> Chappy chat app!</h1>
-
 			</header>
 			<main>
 				<div className='loggin'>
@@ -15,7 +14,6 @@ function App() {
 					<button id="login-button"> Log in </button>
 					<button id="logout-button"> Log out </button>
 				</div>
-				
 			</main>
 		</>
 	)
