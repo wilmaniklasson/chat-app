@@ -13,6 +13,7 @@
     "start-backend": "npm run build-backend && node --env-file .env ./backendDist/server.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.21.1",
     "joi": "^17.13.3",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
+    "@types/cors": "^2.8.17",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",

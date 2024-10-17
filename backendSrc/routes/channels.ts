@@ -14,6 +14,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Här kan du lägga till fler kanalrelaterade rutter (skapa, uppdatera, ta bort kanaler etc.)
+
 
 export default router;

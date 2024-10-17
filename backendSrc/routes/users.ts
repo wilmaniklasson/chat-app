@@ -14,6 +14,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Här kan du lägga till fler användarrelaterade rutter (skapa, uppdatera, ta bort användare etc.)
+
 
 export default router;

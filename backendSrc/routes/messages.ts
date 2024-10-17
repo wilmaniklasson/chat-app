@@ -14,6 +14,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Här kan du lägga till fler meddelanderelaterade rutter (skapa, uppdatera, ta bort meddelanden etc.)
+
 
 export default router;
