@@ -1,18 +1,24 @@
-// Importera och konfigurera
-import express, { Express } from 'express'
-const app: Express = express()
-const port: number = Number(process.env.PORT || 1224)
+import express from 'express';
+import { connectDB } from './dbConnection.js';
+import usersRouter from './routes/users.js';
+import messagesRouter from './routes/messages.js';
+import channelsRouter from './routes/channels.js';
 
+const app = express();
+const PORT = process.env.PORT || 2412;
 
-// Middleware
-app.use('/', express.static('dist/'))
-app.use('/', express.json())
+// Anslut till databasen
+connectDB();
 
+// Middleware för att hantera JSON-data
+app.use(express.json());
 
+// Använd rutter
+app.use('/users', usersRouter);
+app.use('/messages', messagesRouter);
+app.use('/channels', channelsRouter);
 
-
-
-// Starta servern
-app.listen(port, () => {
-	console.log(`Server is listening on port ${port}...`)
-})
+// Startar servern
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});

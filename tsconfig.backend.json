@@ -1,22 +1,16 @@
 {
 	"compilerOptions": {
-	  "target": "ES2022",
-	  "lib": ["ES2022"],
+	  "target": "ES2020",
 	  "module": "ESNext",
-	  "skipLibCheck": true,
-
-	  /* Bundler mode */
-	  "moduleResolution": "bundler",
-	  "isolatedModules": true,
-	  "moduleDetection": "force",
-	  "noEmit": false,
-	  "outDir": "./backendDist/",
-
-	  /* Linting */
+	  "moduleResolution": "node", // Lägg till detta
+	  "outDir": "./backendDist", // Sätt utmatningskatalogen här
+	  "rootDir": "./backendSrc", // Sätt rotkatalogen här
 	  "strict": true,
-	  "noUnusedLocals": true,
-	  "noUnusedParameters": true,
-	  "noFallthroughCasesInSwitch": true
+	  "esModuleInterop": true,
+	  "skipLibCheck": true,
+	  "forceConsistentCasingInFileNames": true
 	},
-	"include": ["backendSrc"]
+	"include": ["backendSrc/**/*"], // Inkludera alla filer i backendSrc
+	"exclude": ["node_modules", "**/*.spec.ts"] // Exkludera oönskade filer
   }
+  
