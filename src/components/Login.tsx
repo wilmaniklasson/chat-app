@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom'; // Importera useNavigate
 import "./Loggin.css";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
+    const navigate = useNavigate(); // Initiera useNavigate
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -37,7 +38,10 @@ const Login: React.FC = () => {
 
             // Spara token i localStorage
             localStorage.setItem('token', result.token);
-            setMessage('Inloggning lyckades!'); 
+            setMessage('Inloggning lyckades!');
+
+            // Navigera till hemsidan
+            navigate('/home'); // Navigera till hemsidan efter inloggning
     
         } catch (error: any) {
             console.error('Error vid inloggning:', error); // Logga eventuella fel
@@ -45,9 +49,9 @@ const Login: React.FC = () => {
         }
     };
     
-    
-
     return (
+        <>
+        <header>Chappy chat app</header>
         <div className="login-container">
             <form onSubmit={handleLogin} className="login-form">
                 <h2>Logga in</h2>
@@ -66,16 +70,16 @@ const Login: React.FC = () => {
                     required
                 />
                 <button className='logg-in-btn' type="submit">Logga in</button>
-                <button className='logg-ut-btn'>Logga ut</button>
                 {message && (
                     <div className={`message ${message.includes('lyckades') ? 'success' : 'error'}`}>
                         {message}
-                        
                     </div>
                 )}
-         
             </form>
         </div>
+
+        </>
+        
     );
 };
 

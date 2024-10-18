@@ -65,20 +65,6 @@ body {
     transform: translateY(-2px);
 }
 
-.logg-ut-btn {
-    background-color: #f83159;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    font-size: 1rem;
-    padding: 12px;
-    width: 100%;
-    max-width: 300px;
-    margin-top: 20px;
-}
-
 
 .login-form .message {
     margin-top: 15px;
