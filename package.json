@@ -13,7 +13,8 @@
     "start-backend": "npm run build-backend && node --env-file .env ./backendDist/server.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
+    "@types/bcrypt": "^5.0.2",
+    "axios": "^1.7.7",
     "dotenv": "^16.0.0",
     "express": "^4.21.1",
     "joi": "^17.13.3",
