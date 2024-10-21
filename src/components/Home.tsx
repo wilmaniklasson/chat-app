@@ -1,12 +1,24 @@
 import './Home.css';
+import { useNavigate } from 'react-router-dom';
+
+
 const Home: React.FC = () => {
+
+const navigate = useNavigate(); 
+
+    const  handleLogUt = () => {
+        console.log('Loggar ut')
+        localStorage.removeItem('token')
+        navigate('/')
+    }
     return (
         <>
         <header className="header-container">
     <h1 className="header-title">Chappy</h1>
     <div className="user-status-container">
         <span className="user-status-text">Inloggad som Alice</span>
-        <button className="logut-button">Logga ut</button>
+        <button onClick={handleLogUt}
+        className="logut-button">Logga ut</button>
     </div>
 </header>
 <main className='home-main'>
@@ -18,6 +30,9 @@ const Home: React.FC = () => {
             <li className="nav-locked nav-item"><a className="nav-link" href="#">#grupp1 🔒</a></li>
             <li className="nav-selected nav-item"><a className="nav-link" href="#">#grupp2 🔑</a></li>
             <li className="nav-locked nav-item"><a className="nav-link" href="#">#grupp3 🔒</a></li>
+            <input title="Skapa ny kanal" placeholder="Skapa ny kanal">
+            </input>
+            <button> Lägg till</button>
             <li className="nav-item"><hr /></li>
             <li className="nav-item" title="Direktmeddelanden">[DM]</li>
             <li className="nav-item"><a className="nav-link" href="#">PratgladPelle</a></li>

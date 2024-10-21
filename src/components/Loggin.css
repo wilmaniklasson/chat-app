@@ -43,7 +43,7 @@ body {
 }
 
 .login-form input:focus {
-    border-color: #6200ea;
+    border-color: #cbc2d7;
     outline: none;
 }
 

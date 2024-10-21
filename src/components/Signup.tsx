@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importera useNavigate
 import "./Loggin.css";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
@@ -48,9 +48,6 @@ const Login: React.FC = () => {
             setMessage(error.message); // Felmeddelande
         }
     };
-    const handleSignUp = () => {
-        navigate('/signup');
-    };
     
     return (
         <>
@@ -58,12 +55,9 @@ const Login: React.FC = () => {
         <div className="login-container">
             
             <form onSubmit={handleLogin} className="login-form">
-                <div>
-                    <button onClick={() => navigate('/home')}>Gå med som gäst</button>
-                    <button type="button" className='signup-btn' onClick={handleSignUp}>Skapa konto</button>
-                </div>
+                
             
-                <h2>Logga in</h2> 
+                <h2>Skapa konto</h2> 
                 <input
                     type="text"
                     placeholder="Användarnamn"
@@ -94,4 +88,4 @@ const Login: React.FC = () => {
     );
 };
 
-export default Login;
+export default Signup;
