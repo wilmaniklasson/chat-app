@@ -1,23 +1,19 @@
 [
     {
       "username": "Alice",
-      "password": "apple123",
-      "isLoggedIn": false
+      "password": "apple123"
     },
     {
       "username": "Bob",
-      "password": "banana456",
-      "isLoggedIn": true
+      "password": "banana456"
     },
     {
       "username": "Charlie",
-      "password": "cherry789",
-      "isLoggedIn": false
+      "password": "cherry789"
     },
     {
       "username": "Dana",
-      "password": "datefruit101",
-      "isLoggedIn": true
+      "password": "datefruit101"
     }
   ]
   
