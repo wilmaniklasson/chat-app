@@ -15,7 +15,12 @@ if (!JWT_SECRET) {
 router.get('/', async (req: Request, res: Response) => { 
     try {
         const users = await getDB().collection('users').find().toArray();
+        if (users.length === 0) {
+            res.status(404).json({ error: 'No users found' });
+        } else {
         res.json(users);
+        }
+        
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
