@@ -56,12 +56,13 @@ const Login: React.FC = () => {
         <>
         <header>Chappy chat app</header>
         <div className="login-container">
-            
-            <form onSubmit={handleLogin} className="login-form">
                 <div>
-                    <button onClick={() => navigate('/home')}>Gå med som gäst</button>
+                    <button type="button" className='guest-btn' onClick={() => navigate('/home')}>Gäst konto</button>
                     <button type="button" className='signup-btn' onClick={handleSignUp}>Skapa konto</button>
                 </div>
+            
+            <form onSubmit={handleLogin} className="login-form">
+               
             
                 <h2>Logga in</h2> 
                 <input

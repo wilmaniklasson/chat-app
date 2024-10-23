@@ -38,7 +38,7 @@ router.post('/login', async (req: Request, res: Response) => {
         // Kontrollera om användaren finns och om lösenordet stämmer
         if (user && user.password === password) {
             // Skapa JWT-token
-            const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token gäller i 1 timme
+            const token = jwt.sign({ id: user._id }, JWT_SECRET,);
             
             // Returnerar användarens ID och token
             res.json({ _id: user._id, token });

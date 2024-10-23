@@ -2,11 +2,12 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9; 
+    background-color: #efefef; 
 }
 
 .login-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -59,6 +60,25 @@ body {
     transition: background-color 0.3s, transform 0.2s;
     font-size: 1rem;
 }
+
+.guest-btn, .signup-btn{
+    padding: 10px 20px;
+    width: 150px; ;
+    background-color: #f4f4f9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.403);
+    color: #6200ea;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-size: 1rem;
+    margin: 5px
+}
+.guest-btn:hover, .signup-btn:hover {
+    
+    transform: translateY(-2px);
+}
+
 
 .logg-in-btn:hover {
     background-color: #3700b3;
