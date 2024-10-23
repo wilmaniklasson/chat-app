@@ -2,9 +2,9 @@ import { ObjectId } from "mongodb";
 
 export interface Message {
     _id: ObjectId;
-    senderId: ObjectId;
-    recipientId: ObjectId | null; 
-    channelId: ObjectId | null; 
+    senderName: string;
+    recipientName: string | null; 
+    channelName: string | null; 
     content: string;
     timestamp: Date;
 }

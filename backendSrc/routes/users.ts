@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
 
 dotenv.config(); // Ladda in miljövariabler från .env-filen
 
@@ -51,4 +52,50 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 });
 
+
+
+router.get('/protected', async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+        res.status(401).json({ error: 'No token provided' });
+        return;
+    }
+
+    try {
+        // Verifiera token och få användarens ID
+        const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+        const _id = payload.id; // Hämta ID från payload
+
+        // Hämta användaren från databasen
+        const user = await getDB().collection('users').findOne({ _id: new ObjectId(_id) });
+        console.log('User from database:', user);
+        
+        if (user) {
+            // Hämta användarens namn
+            const username = user.username; 
+
+            // Hämta meddelanden som tillhör användaren
+            const messages = await getDB().collection('messages').find({
+                $or: [
+                    { senderName: username },  
+                    { recipientName: username } 
+                ]
+            }).toArray();
+            
+            console.log('Messages:', messages);
+            
+            // Returnera både användarinformation och meddelanden
+            res.json({ user, messages });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error verifying token or fetching user/messages:', error);
+        res.status(401).json({ error: 'Invalid token' });
+    }
+});
+
+
 export default router;
+

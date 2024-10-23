@@ -5,6 +5,7 @@ import messagesRouter from './routes/messages.js';
 import channelsRouter from './routes/channels.js';
 import logger from './logger.js';
 
+
 const app = express();
 const PORT = process.env.PORT || 1224;
 
@@ -22,6 +23,7 @@ app.use(logger);
 app.use('/api/users', usersRouter); 
 app.use('/api/messages', messagesRouter);
 app.use('/api/channels', channelsRouter);
+
 
 // Starta servern
 app.listen(PORT, () => {
