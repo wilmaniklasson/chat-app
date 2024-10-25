@@ -97,5 +97,82 @@ router.get('/protected', async (req: Request, res: Response) => {
 });
 
 
+router.get('/username/:username', async (req: Request, res: Response) => {
+    const username = req.params.username;
+    try {
+        const user = await getDB().collection('users').findOne({
+            username
+        });
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        } else {
+            res.json(user);
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Failed to fetch user' });
+    }
+});
+
+router.delete('/delete', async (req: Request, res: Response) => {
+
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        res.status(401).json({ error: 'No token provided' });
+        return;
+    }
+
+    try {
+        
+        const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+        const _id = new ObjectId(payload.id);
+
+ 
+        const deleteResult = await getDB().collection('users').deleteOne({ _id });
+
+        if (deleteResult.deletedCount === 0) {
+            res.status(404).json({ error: 'User not found' });
+        } else {
+            res.json({ message: 'User successfully deleted' });
+        }
+    } catch (error) {
+        console.error('Error verifying token or deleting user:', error);
+        res.status(401).json({ error: 'Invalid token' });
+    }
+});
+
+
+router.post('/register', async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+
+
+    if (!username || !password) {
+        res.status(400).json({ error: 'Username and password are required' });
+    } else {
+        try {
+         
+            const existingUser = await getDB().collection('users').findOne({ username });
+            if (existingUser) {
+              
+                res.status(409).json({ error: 'Username already exists' });
+            } else {
+           
+                const newUser = { username, password }; 
+                const result = await getDB().collection('users').insertOne(newUser);
+
+              
+                const token = jwt.sign({ id: result.insertedId }, 'YOUR_SECRET_KEY');
+
+               
+                res.status(201).json({ message: 'User created', token });
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+            res.status(500).json({ error: 'Failed to create user' });
+        }
+    }
+});
+
 export default router;
 
