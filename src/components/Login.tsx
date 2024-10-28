@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importera useNavigate
+import { useNavigate } from 'react-router-dom';
 import "./Loggin.css";
 
 const Login: React.FC = () => {
+
+    // Navigate-funktion från react-router-dom
+    const navigate = useNavigate(); 
+    // States för användarnamn, lösenord och meddelande
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
-    const navigate = useNavigate(); // Initiera useNavigate
-
+    
+    // Funktion för att logga in
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        e.preventDefault(); // Förhindra att formuläret skickas
     
         const data = { username, password }; // Samla in användarnamn och lösenord
         console.log('Skickar data till server:', JSON.stringify(data)); // Logga data som skickas
@@ -56,15 +60,19 @@ const Login: React.FC = () => {
         <>
         <header>Chappy chat app</header>
         <div className="login-container">
+           
                 <div>
+                      {/* Logga in som gäst */}
                     <button type="button" className='guest-btn' onClick={() => navigate('/home')}>Gäst konto</button>
+                    {/* Navigera till registreringssidan */}
                     <button type="button" className='signup-btn' onClick={handleSignUp}>Skapa konto</button>
                 </div>
             
+            {/* Formulär för inloggning */}
             <form onSubmit={handleLogin} className="login-form">
-               
-            
                 <h2>Logga in</h2> 
+
+                {/* Användarnamn */}
                 <input
                     type="text"
                     placeholder="Användarnamn"
@@ -72,6 +80,7 @@ const Login: React.FC = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                 />
+                {/* Lösenord */}
                 <input
                     type="password"
                     placeholder="Lösenord"
@@ -79,19 +88,18 @@ const Login: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+                {/* Knapp för att skicka inloggningsformuläret */}
                 <button className='logg-in-btn' type="submit">Logga in</button>
+
+                {/* Visa meddelande om inloggning lyckades eller misslyckades */}
                 {message && (
                     <div className={`message ${message.includes('lyckades') ? 'success' : 'error'}`}>
                         {message}
-                    </div>
-                )}
-            
-            </form>
-            
-        </div>
-
+                        </div>
+                    )}
+                </form>
+            </div>
         </>
-        
     );
 };
 

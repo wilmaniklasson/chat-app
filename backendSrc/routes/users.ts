@@ -16,19 +16,23 @@ if (!JWT_SECRET) {
 router.get('/', async (req: Request, res: Response) => { 
     try {
         const users = await getDB().collection('users').find().toArray();
+        
         if (users.length === 0) {
+            // 404: Not Found
             res.status(404).json({ error: 'No users found' });
         } else {
+            // JSON
         res.json(users);
         }
         
     } catch (error) {
+        // 500: Internal Server Error
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
 
-// Route för inloggning
+// Route för att logga in
 router.post('/login', async (req: Request, res: Response) => { 
     console.log('Login request received:', req.body);
     const { username, password }: { username: string; password: string } = req.body;
@@ -44,9 +48,11 @@ router.post('/login', async (req: Request, res: Response) => {
             // Returnerar användarens ID och token
             res.json({ _id: user._id, token });
         } else {
+            // 401: Unauthorized
             res.status(401).json({ error: 'Invalid username or password' });
         }
     } catch (error) {
+        // 500: Internal Server Error
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Login failed' });
     }
@@ -58,6 +64,7 @@ router.get('/protected', async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
+        // 401: Unauthorized
         res.status(401).json({ error: 'No token provided' });
         return;
     }
@@ -88,15 +95,18 @@ router.get('/protected', async (req: Request, res: Response) => {
             // Returnera både användarinformation och meddelanden
             res.json({ user, messages });
         } else {
+            // 404: Not Found
             res.status(404).json({ error: 'User not found' });
         }
     } catch (error) {
+        // 401: Unauthorized
         console.error('Error verifying token or fetching user/messages:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
 });
 
 
+// Hämta användare med ett visst användarnamn
 router.get('/username/:username', async (req: Request, res: Response) => {
     const username = req.params.username;
     try {
@@ -104,71 +114,83 @@ router.get('/username/:username', async (req: Request, res: Response) => {
             username
         });
         if (!user) {
+            // 404: Not Found
             res.status(404).json({ error: 'User not found' });
         } else {
+            // JSON
             res.json(user);
         }
     } catch (error) {
+        // 500: Internal Server Error
         console.error('Error fetching user:', error);
         res.status(500).json({ error: 'Failed to fetch user' });
     }
 });
 
+// Ta bort användare
 router.delete('/delete', async (req: Request, res: Response) => {
 
     const token = req.headers.authorization?.split(' ')[1];
 
+    // Kontrollera så att token inte saknas
     if (!token) {
+        // 401: Unauthorized
         res.status(401).json({ error: 'No token provided' });
         return;
     }
 
     try {
-        
+        // Verifiera token och få användarens ID
         const payload = jwt.verify(token, JWT_SECRET) as { id: string };
         const _id = new ObjectId(payload.id);
 
- 
+        // Ta bort användaren från databasen
         const deleteResult = await getDB().collection('users').deleteOne({ _id });
 
         if (deleteResult.deletedCount === 0) {
+            // 404: Not Found
             res.status(404).json({ error: 'User not found' });
         } else {
+            // JSON
             res.json({ message: 'User successfully deleted' });
         }
     } catch (error) {
+        // 401: Unauthorized
         console.error('Error verifying token or deleting user:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
 });
 
 
+// Registrera användare
 router.post('/register', async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
 
     if (!username || !password) {
+        // 400: Bad Request
         res.status(400).json({ error: 'Username and password are required' });
     } else {
         try {
-         
+            // Kontrollera om användarnamnet redan finns
             const existingUser = await getDB().collection('users').findOne({ username });
             if (existingUser) {
-              
+                // 409: Conflict
                 res.status(409).json({ error: 'Username already exists' });
             } else {
-           
+                // Skapa ny användare
                 const newUser = { username, password }; 
                 const result = await getDB().collection('users').insertOne(newUser);
 
-              
+                // Skapa JWT-token
                 const token = jwt.sign({ id: result.insertedId }, 'YOUR_SECRET_KEY');
 
-               
+                // 201: Created
                 res.status(201).json({ message: 'User created', token });
             }
         } catch (error) {
             console.error('Error creating user:', error);
+            // 500: Internal Server Error
             res.status(500).json({ error: 'Failed to create user' });
         }
     }

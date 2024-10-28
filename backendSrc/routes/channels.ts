@@ -8,22 +8,22 @@ const router = express.Router();
 router.get('/', async (req: Request, res: Response) => {
     try {
         const channels = await getDB().collection('channels').find().toArray();
-        
-
+        // 404: Not Found
         if (channels.length === 0) {
             res.status(404).json({ error: 'No channels found' });
         } else {
-        res.json(channels);
+            // JSON
+            res.json(channels);
         }
     } catch (error) {
+        // 500: Internal Server Error
         console.error('Error fetching channels:', error);
         res.status(500).json({ error: 'Failed to fetch channels' });
     }
 });
 
 
-//hämta en kanal med sitt namn 
-
+// Route för att hämta en specifik kanal med namn
 router.get('/name/:name', async (req: Request, res: Response) => {
     const name = req.params.name;
     try {
@@ -31,41 +31,42 @@ router.get('/name/:name', async (req: Request, res: Response) => {
             name
         });
         if (!channel) {
+            // 404: Not Found
             res.status(404).json({ error: 'Channel not found' });
         } else {
+            // JSON
             res.json(channel);
         }
     } catch (error) {
+        // 500: Internal Server Error
         console.error('Error fetching channel:', error);
         res.status(500).json({ error: 'Failed to fetch channel' });
     }
 
 
 });
-
+// Route för att posta en ny kanal
 router.post('/', async (req: Request, res: Response) => {
     const { name } = req.body;
 
-  
+    // Om name saknas
     if (!name) {
         res.status(400).json({ error: 'Channel name is required' });
     } else {
         try {
-            
+            // Skapa ett nytt kanalobjekt
             const newChannel = { name };
             const result = await getDB().collection('channels').insertOne(newChannel);
 
-            
+            // 201: Created
             res.status(201).json({ message: 'Channel created', channelId: result.insertedId });
         } catch (error) {
+            // 500: Internal Server Error
             console.error('Error creating channel:', error);
             res.status(500).json({ error: 'Failed to create channel' });
         }
     }
 });
-
-
-
 
 
 export default router;
