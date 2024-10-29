@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
 
+
 const router = express.Router();
 
 // Route för att hämta alla kanaler
@@ -54,12 +55,19 @@ router.post('/', async (req: Request, res: Response) => {
         res.status(400).json({ error: 'Channel name is required' });
     } else {
         try {
+
+            const existingChannel = await getDB().collection('channels').findOne({ name });
+            if (existingChannel) {
+                // 409: Conflict
+                res.status(409).json({ error: 'Channel already exists' });
+                return;
+            } else {
             // Skapa ett nytt kanalobjekt
             const newChannel = { name };
             const result = await getDB().collection('channels').insertOne(newChannel);
-
             // 201: Created
             res.status(201).json({ message: 'Channel created', channelId: result.insertedId });
+        }
         } catch (error) {
             // 500: Internal Server Error
             console.error('Error creating channel:', error);
@@ -67,6 +75,8 @@ router.post('/', async (req: Request, res: Response) => {
         }
     }
 });
+
+
 
 
 export default router;

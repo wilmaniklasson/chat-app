@@ -1,6 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
+import { messageSchema } from '../Validete.js';
 
 const router = express.Router();
 
@@ -55,34 +56,50 @@ router.get('/between-users', async (req: Request, res: Response) => {
 });
 
 
-
-// Route för att posta ett nytt meddelande
 router.post('/', async (req: Request, res: Response) => {
     const { senderName, recipientName, channelName, content } = req.body;
 
-    // Om senderName, recipientName, channelName eller content saknas
-    if (!senderName || (!recipientName && !channelName) || !content) {
-        res.status(400).json({ error: 'Missing required fields' });
-    } else {
-        try {
-            const newMessage = {
-                senderName,
-                recipientName: recipientName || null,
-                channelName: channelName || null,
-                content,
-                timestamp: new Date() 
-            };
+    // Validera inkommande data
+    const { error } = messageSchema.validate({ senderName, recipientName, channelName, content });
+    if (error) {
+         res.status(400).json({ error: error.details[0].message });
+         return;
+    }
 
-            // Lägg till meddelandet i databasen
-            const result = await getDB().collection('messages').insertOne(newMessage);
-
-            // 201: Created
-            res.status(201).json({ message: 'Message sent successfully', id: result.insertedId });
-        } catch (error) {
-            // 500: Internal Server Error
-            console.error('Error sending message:', error);
-            res.status(500).json({ error: 'Failed to send message' });
+    try {
+        // Kontrollera om kanalen eller mottagaren finns
+        if (channelName) {
+            const channelExists = await getDB().collection('channels').findOne({ name: channelName });
+            if (!channelExists) {
+                 res.status(400).json({ error: 'Specified channel does not exist' });
+                 return;
+            }
+        } else if (recipientName) {
+            const userExists = await getDB().collection('users').findOne({ name: recipientName });
+            if (!userExists) {
+                 res.status(400).json({ error: 'Specified recipient does not exist' });
+                 return;
+            }
         }
+
+        // Skapa nytt meddelandeobjekt
+        const newMessage = {
+            senderName,
+            recipientName: recipientName || null,
+            channelName: channelName || null,
+            content,
+            timestamp: new Date()
+        };
+
+        // Lägg till meddelandet i databasen
+        const result = await getDB().collection('messages').insertOne(newMessage);
+
+        // 201: Created
+        res.status(201).json({ message: 'Message sent successfully', id: result.insertedId });
+    } catch (error) {
+        // 500: Internal Server Error
+        console.error('Error sending message:', error);
+        res.status(500).json({ error: 'Failed to send message' });
     }
 });
 

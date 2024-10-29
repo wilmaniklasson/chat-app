@@ -1,8 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, } from 'express';
 import { getDB } from '../dbConnection.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb';
+import { loginSchema, registerSchema, usernameSchema, deleteSchema } from '../Validete.js';
 
 dotenv.config(); // Ladda in miljövariabler från .env-filen
 
@@ -32,8 +33,16 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
+
+
+
 // Route för att logga in
 router.post('/login', async (req: Request, res: Response) => { 
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+        res.status(400).json({ error: error.details[0].message });
+        return;
+    }
     console.log('Login request received:', req.body);
     const { username, password }: { username: string; password: string } = req.body;
     try {
@@ -108,6 +117,11 @@ router.get('/protected', async (req: Request, res: Response) => {
 
 // Hämta användare med ett visst användarnamn
 router.get('/username/:username', async (req: Request, res: Response) => {
+    const { error } = usernameSchema.validate(req.params); 
+    if (error) {
+        res.status(400).json({ error: error.details[0].message });
+        return;
+    }
     const username = req.params.username;
     try {
         const user = await getDB().collection('users').findOne({
@@ -127,15 +141,23 @@ router.get('/username/:username', async (req: Request, res: Response) => {
     }
 });
 
+
 // Ta bort användare
 router.delete('/delete', async (req: Request, res: Response) => {
 
     const token = req.headers.authorization?.split(' ')[1];
+   
 
     // Kontrollera så att token inte saknas
     if (!token) {
         // 401: Unauthorized
         res.status(401).json({ error: 'No token provided' });
+        return;
+    }
+
+    const { error } = deleteSchema.validate(req.body);
+    if (error) {
+        res.status(400).json({ error: error.details[0].message });
         return;
     }
 
@@ -162,8 +184,16 @@ router.delete('/delete', async (req: Request, res: Response) => {
 });
 
 
+
+
 // Registrera användare
 router.post('/register', async (req: Request, res: Response) => {
+
+    const { error } = registerSchema.validate(req.body);
+    if (error) {
+        res.status(400).json({ error: error.details[0].message });
+        return;
+    }
     const { username, password } = req.body;
 
 
@@ -183,7 +213,7 @@ router.post('/register', async (req: Request, res: Response) => {
                 const result = await getDB().collection('users').insertOne(newUser);
 
                 // Skapa JWT-token
-                const token = jwt.sign({ id: result.insertedId }, 'YOUR_SECRET_KEY');
+                const token = jwt.sign({ id: result.insertedId }, JWT_SECRET);
 
                 // 201: Created
                 res.status(201).json({ message: 'User created', token });
