@@ -41,7 +41,9 @@ const Login: React.FC = () => {
             console.log('Inloggad:', result);
 
             // Spara token i localStorage
-            localStorage.setItem('token', result.token);
+            localStorage.setItem('token', result.token );
+            localStorage.setItem('username', username);
+           
             setMessage('Inloggning lyckades!');
 
             // Navigera till hemsidan
@@ -63,7 +65,7 @@ const Login: React.FC = () => {
            
                 <div>
                       {/* Logga in som gäst */}
-                    <button type="button" className='guest-btn' onClick={() => navigate('/home')}>Gäst konto</button>
+                    <button type="button" className='guest-btn' onClick={() => navigate('/guest')}>Gäst konto</button>
                     {/* Navigera till registreringssidan */}
                     <button type="button" className='signup-btn' onClick={handleSignUp}>Skapa konto</button>
                 </div>

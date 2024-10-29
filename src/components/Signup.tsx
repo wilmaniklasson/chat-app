@@ -15,7 +15,7 @@ const Signup: React.FC = () => {
         console.log('Skickar data till server:', JSON.stringify(data)); // Logga data som skickas
     
         try {
-            const response = await fetch('/api/users/login', {
+            const response = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,6 +38,7 @@ const Signup: React.FC = () => {
 
             // Spara token i localStorage
             localStorage.setItem('token', result.token);
+            localStorage.setItem('username', username);
             setMessage('Inloggning lyckades!');
 
             // Navigera till hemsidan

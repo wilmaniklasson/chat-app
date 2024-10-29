@@ -180,3 +180,8 @@
     font-weight: 700;
     font-size: 18px;
 }
+
+.private-icon {
+    margin-left: 5px; 
+    color: #f83159;
+}

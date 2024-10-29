@@ -2,114 +2,113 @@ import './Home.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../backendSrc/interface/channel';
-import { Message } from '../../backendSrc/interface/message';
 import { FaLock } from 'react-icons/fa';
 
+
+
 // Home-komponenten
-const Home: React.FC = () => {
+const Guest: React.FC = () => {
+    // Navigate-funktion från react-router-dom
     const navigate = useNavigate();
+    // States för användare, kanaler och meddelanden
     const [users, setUsers] = useState<{ _id: string; username: string; password: string }[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [username, setUsername] = useState<string | null>(null);
+    
 
+    // Logga ut användaren
     const handleLogUt = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+        // Navigera till startsidan
         navigate('/');
     };
 
+    // Hämta användare, kanaler och meddelanden med useEffect
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Hämta användare
                 const userResponse = await fetch('/api/users');
                 if (!userResponse.ok) throw new Error('Kunde inte hämta användare');
                 const usersData = await userResponse.json();
                 setUsers(usersData);
 
+                // Hämta kanaler
                 const channelResponse = await fetch('/api/channels');
                 if (!channelResponse.ok) throw new Error('Kunde inte hämta kanaler');
                 const channelsData = await channelResponse.json();
                 setChannels(channelsData);
+                console.log(channelsData);
+           
 
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.error('Ingen token hittades');
-                    return;
-                }
-
-                const storedUsername = localStorage.getItem('username');
-                setUsername(storedUsername); // Sätt användarnamnet direkt här
-
-                const messagesResponse = await fetch('/api/users/protected', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!messagesResponse.ok) throw new Error('Kunde inte hämta meddelanden');
-                const messagesData = await messagesResponse.json();
-                setMessages(messagesData.messages); 
             } catch (error) {
                 console.error('Fel vid hämtning av data:', error);
+                
             }
         };
 
+        // Kör fetchData
         fetchData();
     }, []); // tom array för att useEffect ska köras en gång
 
+    
+
     return (
         <>
+            {/* Header */} 
             <header className="header-container">
                 <h1 className="header-title">Chappy</h1>
                 <div className="user-status-container">
-                    {username && <span className="user-status-text">Inloggad som: {username}</span>}
+                    <span className="user-status-text">Inloggad som Gäst</span>
                     <button onClick={handleLogUt} className="logut-button">Logga ut</button>
                 </div>
             </header>
 
+            {/* Main */}
             <main className='home-main'>
                 <nav className="nav-container">
+                    {/* Lista med [Kanaler] */}
                     <ul className="nav-list">
                         <li className="nav-item">[Kanaler]</li>
                         {channels.map(channel => (
-                            <li key={channel.name} className="nav-item">
-                                <a className="nav-link" href={`${channel.name}`}>
-                                    {channel.name}
-                                    {channel.isPrivate && <FaLock className="private-icon" />} 
-                                </a>
+                            <li key={channel._id.toString()} className="nav-item">
+                                {channel.isPrivate ? (
+                                    <span className="private-channel">
+                                        {channel.name}
+                                        <FaLock className="private-icon" />
+                                    </span>
+                                ) : (
+                                    <a className="nav-link" href={`${channel.name}`}>
+                                        {channel.name}
+                                        {channel.isPrivate && <FaLock className="private-icon" />}
+                                    </a>
+                                )}
                             </li>
                         ))}
-                        <li className="nav-item">
-                            <input title="Skapa ny kanal" placeholder="Skapa ny kanal" />
-                            <button>Lägg till</button>
-                        </li>
                         <li className="nav-item"><hr /></li>
                         <li className="nav-item" title="Direktmeddelanden">[DM]</li>
                         {users.map(user => (
                             <li key={user._id} className="nav-item">
-                                <a className="nav-link" href="#">{user.username}</a>
+                                {user.username}
                             </li>
                         ))}
                     </ul>
                 </nav>
 
+                {/* Chat-container */}
                 <div className="chat-container">
                     <section className="chat-header">
                          <span className="chat-name"></span>
                     </section>
 
+                    {/* Sektion för chatthistorik */}
                     <section className="chat-history">
-                        {messages.map(message => (
-                            <section key={message._id.toString()} className="chat-message">
-                                <p>{message.senderName}:</p>
-                                <p className='text'>{message.content}</p>
-                                <p className='time'>{new Date(message.timestamp).toLocaleTimeString()}</p> 
+                       
+                            <section className="chat-message">
+                               
                             </section>
-                        ))}
+                      
                     </section>
 
+                    {/* Input och knapp för att skicka meddelande */}
                     <section>
                         <input type="text" className="chat-input" placeholder="Ditt meddelande..." />
                         <button className="send-button">Skicka</button>
@@ -120,4 +119,4 @@ const Home: React.FC = () => {
     );
 };
 
-export default Home;
+export default Guest;

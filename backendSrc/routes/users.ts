@@ -54,8 +54,8 @@ router.post('/login', async (req: Request, res: Response) => {
             // Skapa JWT-token
             const token = jwt.sign({ id: user._id }, JWT_SECRET,);
             
-            // Returnerar användarens ID och token
-            res.json({ _id: user._id, token });
+            // Returnerar användarens ID, namn och token
+            res.json({ _id: user._id, username: user.username, token });
         } else {
             // 401: Unauthorized
             res.status(401).json({ error: 'Invalid username or password' });
@@ -216,7 +216,7 @@ router.post('/register', async (req: Request, res: Response) => {
                 const token = jwt.sign({ id: result.insertedId }, JWT_SECRET);
 
                 // 201: Created
-                res.status(201).json({ message: 'User created', token });
+                res.status(201).json({ message: 'User created', token, username });
             }
         } catch (error) {
             console.error('Error creating user:', error);
