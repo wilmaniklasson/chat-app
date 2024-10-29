@@ -68,6 +68,35 @@
         "channelName": null,
         "content": "I can join the meeting. What about you?",
         "timestamp": "2024-10-16T12:09:00Z"
-    }
-  ]
+    },
+        {
+            "senderName": "Alice",
+            "recipientName": "Bob",
+            "channelName": "General",
+            "content": "Välkommen till General-kanalen! Här kan vi diskutera allt möjligt.",
+            "timestamp": "2024-10-29T10:00:00Z"
+        },
+        {
+            "senderName": "Eve",
+            "recipientName": "Charlie",
+            "channelName": "Random",
+            "content": "Jag såg en fantastisk film igår, någon annan som har sett den?",
+            "timestamp": "2024-10-29T10:05:00Z"
+        },
+        {
+            "senderName": "Dana",
+            "recipientName": "Charlie",
+            "channelName": "Project Discussion",
+            "content": "Vi behöver diskutera tidslinjen för projektet. När kan vi ha ett möte?",
+            "timestamp": "2024-10-29T10:10:00Z"
+        },
+        {
+            "senderName": "Frank",
+            "recipientName": "Alice",
+            "channelName": "Support",
+            "content": "Jag har problem med att logga in på plattformen. Någon som kan hjälpa?",
+            "timestamp": "2024-10-29T10:15:00Z"
+        }
+    ]
+    
   

@@ -71,7 +71,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
 router.get('/protected', async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];
-    
+    const { username: otherUsername } = req.query;
     if (!token) {
         // 401: Unauthorized
         res.status(401).json({ error: 'No token provided' });
@@ -91,12 +91,13 @@ router.get('/protected', async (req: Request, res: Response) => {
             // Hämta användarens namn
             const username = user.username; 
 
-            // Hämta meddelanden som tillhör användaren
-            const messages = await getDB().collection('messages').find({
-                $or: [
-                    { senderName: username },  
-                    { recipientName: username } 
-                ]
+            if (user) {
+                const username = user.username;
+                const messages = await getDB().collection('messages').find({
+                    $or: [
+                        { senderName: username, recipientName: otherUsername },
+                        { senderName: otherUsername, recipientName: username }
+                    ]
             }).toArray();
             
             console.log('Messages:', messages);
@@ -107,6 +108,7 @@ router.get('/protected', async (req: Request, res: Response) => {
             // 404: Not Found
             res.status(404).json({ error: 'User not found' });
         }
+    } 
     } catch (error) {
         // 401: Unauthorized
         console.error('Error verifying token or fetching user/messages:', error);

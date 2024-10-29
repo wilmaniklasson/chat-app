@@ -24,6 +24,27 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 
+// Route för att hämta alla meddelanden i en specifik kanal
+router.get('/channel/:channelName', async (req: Request, res: Response) => {
+    const { channelName } = req.params;
+
+    try {
+        // Hämta meddelanden som matchar kanalens namn
+        const messages = await getDB().collection('messages').find({ channelName }).toArray();
+        
+        // 404: Not Found
+        if (messages.length === 0) {
+            res.status(404).json({ error: 'No messages found in this channel' });
+        } else {
+            // JSON
+            res.json(messages);
+        }
+    } catch (error) {
+        // 500: Internal Server Error
+        console.error('Error fetching messages for channel:', error);
+        res.status(500).json({ error: 'Failed to fetch messages for channel' });
+    }
+});
 
 // Route för att hämta alla meddelanden mellan två användare
 router.get('/between-users', async (req: Request, res: Response) => {
