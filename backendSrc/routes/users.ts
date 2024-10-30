@@ -98,7 +98,9 @@ router.get('/protected', async (req: Request, res: Response) => {
                         { senderName: username, recipientName: otherUsername },
                         { senderName: otherUsername, recipientName: username }
                     ]
-            }).toArray();
+            })
+            .sort({ timestamp: 1 }) // Sortera meddelanden efter tid
+            .toArray();
             
             console.log('Messages:', messages);
             

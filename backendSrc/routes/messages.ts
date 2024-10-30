@@ -30,15 +30,12 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
 
     try {
         // Hämta meddelanden som matchar kanalens namn
-        const messages = await getDB().collection('messages').find({ channelName }).toArray();
+        const messages = await getDB().collection('messages')
+        .find({ channelName })
+        .sort({ timestamp: 1 }) // Sortera meddelanden efter tid
+        .toArray();
         
-        // 404: Not Found
-        if (messages.length === 0) {
-            res.status(404).json({ error: 'No messages found in this channel' });
-        } else {
-            // JSON
-            res.json(messages);
-        }
+        res.json(messages.length > 0 ? messages : []); // Returnera tom array om inga meddelanden hittades
     } catch (error) {
         // 500: Internal Server Error
         console.error('Error fetching messages for channel:', error);
@@ -46,35 +43,7 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
     }
 });
 
-// Route för att hämta alla meddelanden mellan två användare
-router.get('/between-users', async (req: Request, res: Response) => {
-    const { user1, user2 } = req.query;
 
-    try {
-        // Filtrerar ut meddelanden som matchar användarnamnen
-        const filter = {
-            $or: [
-                { senderName: user1, recipientName: user2 },
-                { senderName: user2, recipientName: user1 }
-            ]
-        };
-
-        // Hämta meddelanden som matchar filtret
-        const messages = await getDB().collection('messages').find(filter).toArray();
-
-        // 404: Not Found
-        if (messages.length === 0) {
-            res.status(404).json({ error: 'No messages found between these users' });
-        } else {
-            // JSON
-            res.json(messages);
-        }
-    } catch (error) {
-        // 500: Internal Server Error
-        console.error('Error fetching messages:', error);
-        res.status(500).json({ error: 'Failed to fetch messages' });
-    }
-});
 
 
 router.post('/', async (req: Request, res: Response) => {

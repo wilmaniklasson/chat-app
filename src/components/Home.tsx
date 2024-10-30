@@ -13,8 +13,7 @@ const Home: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
     const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
-    const [noMessages, setNoMessages] = useState(false);
-
+  
 
     // Logga ut
     const handleLogUt = () => {
@@ -22,6 +21,7 @@ const Home: React.FC = () => {
         localStorage.removeItem('username');
         navigate('/');
     };
+
 
     // Hämta data när komponenten laddas
     useEffect(() => {
@@ -50,7 +50,6 @@ const Home: React.FC = () => {
                 const storedUsername = localStorage.getItem('username');
                 setUsername(storedUsername); 
 
-                 
             } catch (error) {
                 console.error('Fel vid hämtning av data:', error);
             }
@@ -59,6 +58,7 @@ const Home: React.FC = () => {
         fetchData();
     }, []); // tom array för att useEffect ska köras en gång
 
+    
     // Hämta meddelanden när en kanal väljs
     useEffect(() => {
         if (selectedChannel) {
@@ -67,9 +67,9 @@ const Home: React.FC = () => {
 
     }, [selectedChannel]);
 
+
     // Hämta meddelanden för en specifik kanal
     const fetchMessages = async (channelName: string) => {
-        setNoMessages(false); // Återställ noMessages
         try {
             const response = await fetch(`/api/messages/channel/${channelName}`);
             if (!response.ok) {
@@ -77,30 +77,24 @@ const Home: React.FC = () => {
                 console.error('Fel status:', response.status, 'Respons:', errorText);
                 throw new Error('Kunde inte hämta meddelanden');
             }
-    
+            // JSON
             const data = await response.json();
             
-            // Kontrollera om listan är tom
-            if (data.length === 0) {
-                setNoMessages(true);
-            }
-            setMessages(data); // Uppdaterar även om data är tom
+            setMessages(data || []); // Uppdaterar även om data är tom
         } catch (error) {
             console.error('Fel vid hämtning av meddelanden:', error);
         }
     };
     
  
-
+    // Hämta skyddade meddelanden
     const fetchProtectedMessages = async (otherUsername: string) => {
-        setNoMessages(false); // Återställ noMessages
         try {
             const token = localStorage.getItem('token');
             if (!token) {
                 console.error('Ingen token hittades');
                 return;
             }
-    
             const messagesResponse = await fetch(`/api/users/protected?username=${otherUsername}`, {
                 method: 'GET',
                 headers: {
@@ -109,25 +103,18 @@ const Home: React.FC = () => {
             });
     
             if (!messagesResponse.ok) throw new Error('Kunde inte hämta meddelanden');
-    
+            // JSON
             const messagesData = await messagesResponse.json();
-            
-            // Kontrollera om meddelandelistan är tom
-            if (!messagesData.messages || messagesData.messages.length === 0) {
-                setNoMessages(true);
-            }
-            
-            setMessages(messagesData.messages || []); // Om ingen meddelandelista, sätt till tom array
+
+            setMessages(messagesData.messages || []); // Uppdaterar även om data är tom
         } catch (error) {
             console.error('Fel vid hämtning av skyddade meddelanden:', error);
         }
     };
     
     
-
     return (
         <>
-        
             <header className="header-container">
                 <h1 className="header-title">Chappy</h1>
                 <div className="user-status-container">
@@ -182,7 +169,7 @@ const Home: React.FC = () => {
                     </section>
 
                     <section className="chat-history">
-                        {noMessages ? (
+                        {messages.length === 0 ? (
                             <p className="no-messages">Inga meddelanden ännu.</p>
                         ) : (
                             messages.map(message => (
