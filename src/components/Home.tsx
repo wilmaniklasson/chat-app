@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../backendSrc/interface/channel';
 import { Message } from '../../backendSrc/interface/message';
 import { FaLock } from 'react-icons/fa';
+import Chat from './Chat';
 
 // Home-komponenten
 const Home: React.FC = () => {
@@ -12,7 +13,7 @@ const Home: React.FC = () => {
     const [channels, setChannels] = useState<Channel[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
-    const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
+    const [selected, setSelected] = useState<string | null>(null);
   
 
     // Logga ut
@@ -59,13 +60,7 @@ const Home: React.FC = () => {
     }, []); // tom array för att useEffect ska köras en gång
 
     
-    // Hämta meddelanden när en kanal väljs
-    useEffect(() => {
-        if (selectedChannel) {
-            fetchMessages(selectedChannel);
-        }
-
-    }, [selectedChannel]);
+  
 
 
     // Hämta meddelanden för en specifik kanal
@@ -133,7 +128,7 @@ const Home: React.FC = () => {
                                     className="nav-link" 
                                     onClick={() => {
                                         setMessages([]); // Återställ meddelanden
-                                        setSelectedChannel(channel.name); // Sätt kanalnamn
+                                        setSelected(channel.name); // Sätt kanalnamn
                                         fetchMessages(channel.name); // Hämta meddelanden
                                         }}>
                                     {channel.name}
@@ -153,7 +148,7 @@ const Home: React.FC = () => {
                                     className="nav-link" 
                                     onClick={() => {
                                         setMessages([]); // Återställ meddelanden
-                                        setSelectedChannel(user.username); // Sätt användarnamnet som kanalnamn
+                                        setSelected(user.username); // Sätt användarnamnet som kanalnamn
                                         fetchProtectedMessages(user.username); // Hämta skyddade meddelanden
                                     }}>
                                     {user.username}
@@ -162,32 +157,11 @@ const Home: React.FC = () => {
                         ))}
                     </ul>
                 </nav>
+               
+                    <Chat selected={selected} messages={messages} />
+                
 
-                <div className="chat-container">
-                    <section className="chat-header">
-                         <span className="chat-name">{selectedChannel}</span>
-                    </section>
-
-                    <section className="chat-history">
-                        {messages.length === 0 ? (
-                            <p className="no-messages">Inga meddelanden ännu.</p>
-                        ) : (
-                            messages.map(message => (
-                                <section key={message._id.toString()} className="chat-message">
-                                    <p>{message.senderName}:</p>
-                                    <p className='text'>{message.content}</p>
-                                    <p className='time'>{new Date(message.timestamp).toLocaleTimeString()}</p> 
-                                </section>
-                            ))
-                        )}
-                    </section>
-
-
-                    <section>
-                        <input type="text" className="chat-input" placeholder="Ditt meddelande..." />
-                        <button className="send-button">Skicka</button>
-                    </section>
-                </div>
+                
             </main>
         </>
     );
