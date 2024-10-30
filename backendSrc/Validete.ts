@@ -26,8 +26,7 @@ const deleteSchema = Joi.object({
 // meddelande
 const messageSchema = Joi.object({
     senderName: Joi.string().required(),
-    recipientName: Joi.string().allow(null, '').optional(),
-    channelName: Joi.string().allow(null, '').optional(),
+    recipientName: Joi.string().required(),
     content: Joi.string().min(1).max(500).required() 
 });
 

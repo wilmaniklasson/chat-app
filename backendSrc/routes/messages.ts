@@ -31,7 +31,7 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
     try {
         // Hämta meddelanden som matchar kanalens namn
         const messages = await getDB().collection('messages')
-        .find({ channelName })
+        .find({ recipientName: channelName }) 
         .sort({ timestamp: 1 }) // Sortera meddelanden efter tid
         .toArray();
         
@@ -45,47 +45,44 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
 
 
 
-
+// Route för att skicka meddelanden
 router.post('/', async (req: Request, res: Response) => {
-    const { senderName, recipientName, channelName, content } = req.body;
-
-    // Validera inkommande data
-    const { error } = messageSchema.validate({ senderName, recipientName, channelName, content });
+    const { senderName, recipientName, content } = req.body;
+    const { error } = messageSchema.validate({ senderName, recipientName, content });
     if (error) {
-         res.status(400).json({ error: error.details[0].message });
-         return;
+        console.error('Valideringsfel:', error.details[0].message);
+        res.status(400).json({ error: error.details[0].message });
+        return;
     }
 
     try {
-        // Kontrollera om kanalen eller mottagaren finns
-        if (channelName) {
-            const channelExists = await getDB().collection('channels').findOne({ name: channelName });
-            if (!channelExists) {
-                 res.status(400).json({ error: 'Specified channel does not exist' });
-                 return;
-            }
-        } else if (recipientName) {
-            const userExists = await getDB().collection('users').findOne({ name: recipientName });
-            if (!userExists) {
-                 res.status(400).json({ error: 'Specified recipient does not exist' });
-                 return;
-            }
+        // Är recipientName är en kanal
+        const isChannel = await getDB().collection('channels').findOne({ name: recipientName });
+        
+        // Är recipientName är en användare med ett username
+        let isUser = null;
+        if (!isChannel) {
+            isUser = await getDB().collection('users').findOne({ username: recipientName });
         }
 
-        // Skapa nytt meddelandeobjekt
+        if (!isChannel && !isUser) {
+            res.status(400).json({ error: 'Specified recipient does not exist' });
+            return;
+        }
+        
+        // Nytt meddelande
         const newMessage = {
             senderName,
-            recipientName: recipientName || null,
-            channelName: channelName || null,
+            recipientName,
             content,
             timestamp: new Date()
         };
-
         // Lägg till meddelandet i databasen
         const result = await getDB().collection('messages').insertOne(newMessage);
+    
+          // 201: Created
+          res.status(201).json({ message: 'Message sent successfully', id: result.insertedId });
 
-        // 201: Created
-        res.status(201).json({ message: 'Message sent successfully', id: result.insertedId });
     } catch (error) {
         // 500: Internal Server Error
         console.error('Error sending message:', error);

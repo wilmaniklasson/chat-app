@@ -7,7 +7,7 @@ interface ChatProps {
     messages: Message[];
 }
 
-const sendMessage = async (senderName: string, recipientName: string | null, channelName: string | null, content: string) => {
+const sendMessage = async (senderName: string, recipientName: string, content: string) => {
     try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Ingen token hittades');
@@ -18,7 +18,7 @@ const sendMessage = async (senderName: string, recipientName: string | null, cha
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ content, senderName, recipientName, channelName }),
+            body: JSON.stringify({ content, senderName, recipientName}),
         });
 
         if (!response.ok) throw new Error('Kunde inte skicka meddelande');
@@ -33,10 +33,12 @@ const Chat: React.FC<ChatProps> = ({ selected, messages }) => {
     const handleSendMessage = () => {
         // Kolla om det är en användare eller en kanal
         const senderName = localStorage.getItem('username'); 
-        const recipientName = selected; // Om det är en användare
-        const channelName = selected; // Om det är en kanal
-
-        sendMessage(senderName || '', recipientName, channelName, messageContent);
+        const recipientName = selected; // Kanal eller användare
+        if (recipientName) {
+            sendMessage(senderName || '', recipientName, messageContent);
+        } else {
+            console.error('Recipient name is null');
+        }
         
         // Rensa meddelandet efter att det skickats
         setMessageContent('');
