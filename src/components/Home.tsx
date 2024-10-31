@@ -15,10 +15,10 @@ const Home: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
-    const [isLocked, setIsLocked] = useState(false); 
+    const [isPrivate, setisPrivate] = useState(false); 
 
     const handleCheckboxChange = () => {
-        setIsLocked(!isLocked); // Växla mellan låst och upplåst
+        setisPrivate(!isPrivate); // Växla mellan låst och upplåst
     };
   
 
@@ -124,6 +124,9 @@ const Home: React.FC = () => {
         }
     };
     
+
+    //lägg till kanal 
+    // ta bort användare 
     
     return (
         <>
@@ -155,12 +158,11 @@ const Home: React.FC = () => {
                         ))}
                         <li className="create-channel">
                             <label className="lock-checkbox">
-                            {isLocked ? <FaLock className="private-icon" /> : <FaUnlock className="open-private-icon" />}
+                            {isPrivate ? <FaLock className="private-icon" /> : <FaUnlock className="open-private-icon" />}
                             <input
                                 type="checkbox"
-                                checked={isLocked}
+                                checked={isPrivate}
                                 onChange={handleCheckboxChange} // Hantera checkboxens förändring
-                                style={{ display: 'none' }} // Dölja checkboxen
                             />
                         </label>
 

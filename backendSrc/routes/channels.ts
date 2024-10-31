@@ -48,7 +48,7 @@ router.get('/name/:name', async (req: Request, res: Response) => {
 });
 // Route för att posta en ny kanal
 router.post('/', async (req: Request, res: Response) => {
-    const { name } = req.body;
+    const { name, isPrivate } = req.body;
 
     // Om name saknas
     if (!name) {
@@ -63,7 +63,7 @@ router.post('/', async (req: Request, res: Response) => {
                 return;
             } else {
             // Skapa ett nytt kanalobjekt
-            const newChannel = { name };
+            const newChannel = { name, isPrivate };
             const result = await getDB().collection('channels').insertOne(newChannel);
             // 201: Created
             res.status(201).json({ message: 'Channel created', channelId: result.insertedId });

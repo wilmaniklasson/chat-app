@@ -240,8 +240,14 @@
     cursor: not-allowed; 
     pointer-events: none; 
 }
+
+input[type="checkbox"] {
+    display: none; 
+}
+
 .lock-checkbox:hover {
     cursor: pointer; 
     scale: 1.1;
    
 }
+
