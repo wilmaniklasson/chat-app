@@ -54,6 +54,12 @@ const Login: React.FC = () => {
             setMessage(error.message); // Felmeddelande
         }
     };
+
+    const handleGuestLogin = () => {
+        localStorage.setItem('username', 'Gäst'); // Sätt användarnamnet som 'guest'
+        navigate('/guest'); // Navigera till gästsidan
+    };
+
     const handleSignUp = () => {
         navigate('/signup');
     };
@@ -65,7 +71,7 @@ const Login: React.FC = () => {
            
                 <div>
                       {/* Logga in som gäst */}
-                    <button type="button" className='guest-btn' onClick={() => navigate('/guest')}>Gäst konto</button>
+                      <button type="button" className='guest-btn' onClick={handleGuestLogin}>Gäst konto</button>
                     {/* Navigera till registreringssidan */}
                     <button type="button" className='signup-btn' onClick={handleSignUp}>Skapa konto</button>
                 </div>

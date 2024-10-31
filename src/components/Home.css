@@ -39,8 +39,8 @@
 }
 
 .nav-container {
-    background-color: #ffffff;
-    width: 250px; 
+    background-color: #e1e2dd;
+    width: 350px; 
     padding: 15px;
     border-right: 1px solid #ccc; 
 }
@@ -53,11 +53,7 @@
     margin: 10px 0;
 }
 
-.nav-link {
-    text-decoration: none; 
-    color: #3b5998; 
-    transition: color 0.3s;
-}
+
 
 .nav-link:hover {
     color: #2d4373; 
@@ -123,6 +119,9 @@
     border-radius: 5px;
     cursor: pointer;
 }
+.send-button:hover {
+    background-color: #3b1373; 
+}
 
 .logut-button {
     background-color: #f83159;
@@ -135,9 +134,7 @@
 }
 
 
-.send-button:hover {
-    background-color: #3b1373; 
-}
+
 
 
 .chat-message{
@@ -184,4 +181,67 @@
 .private-icon {
     margin-left: 5px; 
     color: #f83159;
+    font-size: 15px;
+}
+
+.open-private-icon {
+    color: #28a745;
+    margin-left: 5px; 
+    font-size: 15px;
+}
+
+
+.DM-btn, .channel-btn{
+    
+    color: #20345d;
+    border: none;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.DM-btn:hover, .channel-btn:hover{
+    background-color: #adddc2; 
+    
+}
+
+.create-channel {
+    display: flex; 
+    align-items: center;
+}
+
+.create-channel input {
+    padding: 8px; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex-grow: 1;
+    margin:  0 10px;
+}
+
+.create-channel button {
+    padding: 8px 10px;
+    background-color: #6200ea; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-channel button:hover {
+    background-color: #3b1373; 
+}
+
+
+.disabled {
+    background-color: #ccc; 
+    color: #666; 
+    cursor: not-allowed; 
+    pointer-events: none; 
+}
+.lock-checkbox:hover {
+    cursor: pointer; 
+    scale: 1.1;
+   
 }

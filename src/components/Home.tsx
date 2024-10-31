@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../backendSrc/interface/channel';
 import { Message } from '../../backendSrc/interface/message';
+import { FaUnlock } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import Chat from './Chat';
 
@@ -14,6 +15,11 @@ const Home: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
+    const [isLocked, setIsLocked] = useState(false); 
+
+    const handleCheckboxChange = () => {
+        setIsLocked(!isLocked); // Växla mellan låst och upplåst
+    };
   
 
     // Logga ut
@@ -131,32 +137,43 @@ const Home: React.FC = () => {
 
             <main className='home-main'>
                 <nav className="nav-container">
+                <h2 className="nav-item">Kanaler</h2>
                     <ul className="nav-list">
-                        <li className="nav-item">[Kanaler]</li>
                         {channels.map(channel => (
                             <li key={channel.name} className="nav-item">
                                 <button 
-                                    className="nav-link" 
+                                    className="channel-btn" 
                                     onClick={() => {
                                         setMessages([]); // Återställ meddelanden
                                         setSelected(channel.name); // Sätt kanalnamn
                                         fetchMessages(channel.name); // Hämta meddelanden
                                         }}>
                                     {channel.name}
-                                    {channel.isPrivate && <FaLock className="private-icon" />} 
+                                    {channel.isPrivate && <FaUnlock className="open-private-icon" />} 
                                 </button>
                             </li>
                         ))}
-                        <li className="nav-item">
+                        <li className="create-channel">
+                            <label className="lock-checkbox">
+                            {isLocked ? <FaLock className="private-icon" /> : <FaUnlock className="open-private-icon" />}
+                            <input
+                                type="checkbox"
+                                checked={isLocked}
+                                onChange={handleCheckboxChange} // Hantera checkboxens förändring
+                                style={{ display: 'none' }} // Dölja checkboxen
+                            />
+                        </label>
+
                             <input title="Skapa ny kanal" placeholder="Skapa ny kanal" />
                             <button>Lägg till</button>
                         </li>
+                      
                         <li className="nav-item"><hr /></li>
-                        <li className="nav-item" title="Direktmeddelanden">[DM]</li>
+                        <h2 className="nav-item">DM</h2>
                         {users.map(user => (
                             <li key={user._id} className="nav-item">
                                 <button 
-                                    className="nav-link" 
+                                    className="DM-btn" 
                                     onClick={() => {
                                         setMessages([]); // Återställ meddelanden
                                         setSelected(user.username); // Sätt användarnamnet som kanalnamn

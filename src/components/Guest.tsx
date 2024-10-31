@@ -2,121 +2,127 @@ import './Home.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../backendSrc/interface/channel';
+import { Message } from '../../backendSrc/interface/message';
 import { FaLock } from 'react-icons/fa';
-
-
+import GuestChat from './GuestChat';
 
 // Home-komponenten
 const Guest: React.FC = () => {
-    // Navigate-funktion från react-router-dom
     const navigate = useNavigate();
-    // States för användare, kanaler och meddelanden
-    const [users, setUsers] = useState<{ _id: string; username: string; password: string }[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
-    
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [username, setUsername] = useState<string | null>(null);
+    const [selected, setSelected] = useState<string | null>(null);
+  
 
-    // Logga ut användaren
+    // Logga ut
     const handleLogUt = () => {
-        // Navigera till startsidan
+        localStorage.removeItem('username');
         navigate('/');
     };
 
-    // Hämta användare, kanaler och meddelanden med useEffect
+
+    // Hämta data när komponenten laddas
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Hämta användare
-                const userResponse = await fetch('/api/users');
-                if (!userResponse.ok) throw new Error('Kunde inte hämta användare');
-                const usersData = await userResponse.json();
-                setUsers(usersData);
-
                 // Hämta kanaler
                 const channelResponse = await fetch('/api/channels');
                 if (!channelResponse.ok) throw new Error('Kunde inte hämta kanaler');
                 const channelsData = await channelResponse.json();
                 setChannels(channelsData);
-                console.log(channelsData);
-           
+
+
+                // Hämta användarnamn från localStorage
+                const storedUsername = localStorage.getItem('username');
+                setUsername(storedUsername); 
 
             } catch (error) {
                 console.error('Fel vid hämtning av data:', error);
-                
             }
         };
 
-        // Kör fetchData
         fetchData();
     }, []); // tom array för att useEffect ska köras en gång
 
     
+    useEffect(() => {
+        if (selected) {
+            // Om selected är en kanal
+            if (channels.some(channel => channel.name === selected)) {
+                fetchMessages(selected);
+            }
+        }
+    }, [selected]); // körs när selected ändras
+    
 
+
+    // Hämta meddelanden för en specifik kanal
+    const fetchMessages = async (channelName: string) => {
+        try {
+            const response = await fetch(`/api/messages/channel/${channelName}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Fel status:', response.status, 'Respons:', errorText);
+                throw new Error('Kunde inte hämta meddelanden');
+            }
+            // JSON
+            const data = await response.json();
+            
+            setMessages(data || []); // Uppdaterar även om data är tom
+        } catch (error) {
+            console.error('Fel vid hämtning av meddelanden:', error);
+        }
+    };
+    
+    
+    
     return (
         <>
-            {/* Header */} 
             <header className="header-container">
                 <h1 className="header-title">Chappy</h1>
                 <div className="user-status-container">
-                    <span className="user-status-text">Inloggad som Gäst</span>
+                    {username && <span className="user-status-text">Inloggad som: {username}</span>}
                     <button onClick={handleLogUt} className="logut-button">Logga ut</button>
                 </div>
             </header>
 
-            {/* Main */}
             <main className='home-main'>
                 <nav className="nav-container">
-                    {/* Lista med [Kanaler] */}
+                <h2 className="nav-item">Kanaler</h2>
                     <ul className="nav-list">
-                        <li className="nav-item">[Kanaler]</li>
                         {channels.map(channel => (
-                            <li key={channel._id.toString()} className="nav-item">
-                                {channel.isPrivate ? (
-                                    <span className="private-channel">
-                                        {channel.name}
-                                        <FaLock className="private-icon" />
-                                    </span>
-                                ) : (
-                                    <a className="nav-link" href={`${channel.name}`}>
-                                        {channel.name}
-                                        {channel.isPrivate && <FaLock className="private-icon" />}
-                                    </a>
-                                )}
+                            <li key={channel.name} className="nav-item">
+                                 <button 
+                                    className={`channel-btn ${channel.isPrivate ? 'disabled' : ''}`} 
+                                 
+                                    onClick={() => {
+                                        if (!channel.isPrivate) {
+                                            setMessages([]); // Återställ meddelanden
+                                            setSelected(channel.name); // Sätt kanalnamn
+                                            fetchMessages(channel.name); // Hämta meddelanden
+                                        }
+                                    }}
+                                    disabled={channel.isPrivate} >
+                                    {channel.name}
+                                    {channel.isPrivate && <FaLock className="private-icon" />} 
+                                </button>
                             </li>
                         ))}
-                        <li className="nav-item"><hr /></li>
-                        <li className="nav-item" title="Direktmeddelanden">[DM]</li>
-                        {users.map(user => (
-                            <li key={user._id} className="nav-item">
-                                {user.username}
-                            </li>
-                        ))}
+                        
+                        <li className="nav-item"><hr /></li>  
                     </ul>
                 </nav>
+               
+                    <GuestChat selected={selected} messages={messages} setMessages={setMessages}/>
+                
 
-                {/* Chat-container */}
-                <div className="chat-container">
-                    <section className="chat-header">
-                         <span className="chat-name"></span>
-                    </section>
-
-                    {/* Sektion för chatthistorik */}
-                    <section className="chat-history">
-                       
-                            <section className="chat-message">
-                               
-                            </section>
-                      
-                    </section>
-
-                    {/* Input och knapp för att skicka meddelande */}
-                    <section>
-                        <input type="text" className="chat-input" placeholder="Ditt meddelande..." />
-                        <button className="send-button">Skicka</button>
-                    </section>
-                </div>
+                
             </main>
         </>
     );
 };
 
 export default Guest;
+
+
