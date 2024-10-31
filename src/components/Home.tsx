@@ -60,7 +60,18 @@ const Home: React.FC = () => {
     }, []); // tom array för att useEffect ska köras en gång
 
     
-  
+    useEffect(() => {
+        if (selected) {
+            // Om selected är en kanal
+            if (channels.some(channel => channel.name === selected)) {
+                fetchMessages(selected);
+            } else {
+                // Om selected är en användare (direktmeddelande)
+                fetchProtectedMessages(selected);
+            }
+        }
+    }, [selected]); // körs när selected ändras
+    
 
 
     // Hämta meddelanden för en specifik kanal
@@ -158,7 +169,7 @@ const Home: React.FC = () => {
                     </ul>
                 </nav>
                
-                    <Chat selected={selected} messages={messages} />
+                    <Chat selected={selected} messages={messages} setMessages={setMessages}/>
                 
 
                 

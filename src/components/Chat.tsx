@@ -5,29 +5,34 @@ import './Home.css';
 interface ChatProps {
     selected: string | null;
     messages: Message[];
+    setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-const sendMessage = async (senderName: string, recipientName: string, content: string) => {
+const sendMessage = async (
+    senderName: string, 
+    recipientName: string, 
+    content: string, 
+    setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+) => {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Ingen token hittades');
 
         const response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ content, senderName, recipientName}),
         });
 
         if (!response.ok) throw new Error('Kunde inte skicka meddelande');
+        const updatedMessages = await response.json(); // Hämta uppdaterade meddelanden
+        setMessages(updatedMessages); // Uppdatera meddelandelistan i state
     } catch (error) {
         console.error('Fel vid skickande av meddelande:', error);
     }
 }
 
-const Chat: React.FC<ChatProps> = ({ selected, messages }) => {
+const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
     const [messageContent, setMessageContent] = useState('');
 
     const handleSendMessage = () => {
@@ -35,7 +40,7 @@ const Chat: React.FC<ChatProps> = ({ selected, messages }) => {
         const senderName = localStorage.getItem('username'); 
         const recipientName = selected; // Kanal eller användare
         if (recipientName) {
-            sendMessage(senderName || '', recipientName, messageContent);
+            sendMessage(senderName || '', recipientName, messageContent, setMessages);
         } else {
             console.error('Recipient name is null');
         }

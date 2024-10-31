@@ -80,8 +80,14 @@ router.post('/', async (req: Request, res: Response) => {
         // Lägg till meddelandet i databasen
         const result = await getDB().collection('messages').insertOne(newMessage);
     
-          // 201: Created
-          res.status(201).json({ message: 'Message sent successfully', id: result.insertedId });
+         // Hämta alla meddelanden för mottagaren (kanalen eller användaren)
+         const messages = await getDB().collection('messages')
+         .find({ recipientName })
+         .sort({ timestamp: 1 })
+         .toArray();
+
+     // Returnera alla meddelanden i chatten
+     res.status(201).json(messages);
 
     } catch (error) {
         // 500: Internal Server Error
