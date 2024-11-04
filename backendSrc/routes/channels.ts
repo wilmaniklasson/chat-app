@@ -1,6 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
+import { channelSchema } from '../Validete.js';
 
 
 const router = express.Router();
@@ -48,13 +49,15 @@ router.get('/name/:name', async (req: Request, res: Response) => {
 });
 // Route för att posta en ny kanal
 router.post('/', async (req: Request, res: Response): Promise<void> => {
-    const { name, isPrivate } = req.body;
+    const { error, value } = channelSchema.validate(req.body);
 
-    // Om name saknas
-    if (!name) {
-        res.status(400).json({ error: 'Channel name is required' });
+    // om det finns ett valideringsfel
+    if (error) {
+        res.status(400).json({ error: error.details[0].message });
         return;
     }
+
+    const { name, isPrivate } = value;
 
     try {
         const db = getDB();

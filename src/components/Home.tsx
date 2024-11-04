@@ -18,6 +18,8 @@ const Home: React.FC = () => {
     const [selected, setSelected] = useState<string | null>(null);
     const [isPrivate, setIsPrivate] = useState(false); 
     const [channelName, setChannelName] = useState('');
+    const [error, setError] = useState<string>('');
+
 
     const handleCheckboxChange = () => {
         setIsPrivate(!isPrivate); // Växla mellan låst och upplåst
@@ -61,6 +63,7 @@ const Home: React.FC = () => {
 
             } catch (error) {
                 console.error('Fel vid hämtning av data:', error);
+                setError((error as Error).message || 'Ett okänt fel inträffade');
             }
         };
 
@@ -97,6 +100,7 @@ const Home: React.FC = () => {
             setMessages(data || []); // Uppdaterar även om data är tom
         } catch (error) {
             console.error('Fel vid hämtning av meddelanden:', error);
+            setError((error as Error).message || 'Ett okänt fel inträffade');
         }
     };
     
@@ -123,11 +127,18 @@ const Home: React.FC = () => {
             setMessages(messagesData.messages || []); // Uppdaterar även om data är tom
         } catch (error) {
             console.error('Fel vid hämtning av skyddade meddelanden:', error);
+            setError((error as Error).message || 'Ett okänt fel inträffade');
         }
     };
     
 
     const addChannel = async () => {
+        
+        if (!channelName.trim()) {
+            setError('Kanalnamnet får inte vara tomt.');
+            return;
+        }
+    
         try {
             const response = await fetch('/api/channels', {
                 method: 'POST',
@@ -153,6 +164,7 @@ const Home: React.FC = () => {
             setChannelName(''); // Nollställ inputfältet efter att kanalen skapats
         } catch (error) {
             console.error('Fel vid skapande av kanal:', error);
+            setError((error as Error).message || 'Ett okänt fel inträffade');
         }
     };
 
@@ -238,10 +250,12 @@ const Home: React.FC = () => {
                         ))}
                     </ul>
                 </nav>
-               
+
+                <section className='chat-container'>
+                    {error && <div className="error-message">{error}</div>}  {/* Visar felmeddelandet */}
                     <Chat selected={selected} messages={messages} setMessages={setMessages}/>
                 
-
+                </section>
                 
             </main>
         </>

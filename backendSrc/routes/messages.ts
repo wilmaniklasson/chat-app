@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
 import { messageSchema } from '../Validete.js';
+import { Message } from '../interface/message.js';
 
 const router = express.Router();
 
@@ -46,14 +47,19 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
 
 
 // Route för att skicka meddelanden
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request<{}, {}, Message>, res: Response) => {
     const { senderName, recipientName, content } = req.body;
-    const { error } = messageSchema.validate({ senderName, recipientName, content });
+    
+
+    const { value, error } = messageSchema.validate({ senderName, recipientName, content });
     if (error) {
         console.error('Valideringsfel:', error.details[0].message);
         res.status(400).json({ error: error.details[0].message });
         return;
     }
+    
+    // Destrukturering värdena från value
+    const { senderName: validSenderName, recipientName: validRecipientName, content: validContent } = value;
 
     try {
         // Är recipientName är en kanal
@@ -72,9 +78,9 @@ router.post('/', async (req: Request, res: Response) => {
         
         // Nytt meddelande
         const newMessage = {
-            senderName,
-            recipientName,
-            content,
+            senderName: validSenderName,
+            recipientName: validRecipientName,
+            content: validContent,
             timestamp: new Date()
         };
         // Lägg till meddelandet i databasen
@@ -82,7 +88,7 @@ router.post('/', async (req: Request, res: Response) => {
     
          // Hämta alla meddelanden för mottagaren (kanalen eller användaren)
          const messages = await getDB().collection('messages')
-         .find({ recipientName })
+         .find({ recipientName: validRecipientName })
          .sort({ timestamp: 1 })
          .toArray();
 

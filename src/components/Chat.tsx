@@ -15,7 +15,6 @@ const sendMessage = async (
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>
 ) => {
     try {
-
         const response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
@@ -34,23 +33,29 @@ const sendMessage = async (
 
 const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
     const [messageContent, setMessageContent] = useState('');
+    const [error, setError] = useState(''); // State för felmeddelande
 
     const handleSendMessage = () => {
-        // Kolla om det är en användare eller en kanal
         const senderName = localStorage.getItem('username'); 
         const recipientName = selected; // Kanal eller användare
+
+        if (!messageContent.trim()) { // Kolla om meddelandet är tomt
+            setError('Meddelandet får inte vara tomt.'); // Sätt felmeddelande
+            return; // Avbryt funktionen
+        }
+
         if (recipientName) {
             sendMessage(senderName || '', recipientName, messageContent, setMessages);
+            setError(''); // Rensa felmeddelandet om meddelandet skickas framgångsrikt
         } else {
             console.error('Recipient name is null');
         }
         
-        // Rensa meddelandet efter att det skickats
-        setMessageContent('');
+        setMessageContent(''); // Rensa meddelandet efter att det skickats
     };
 
     return (
-        <div className="chat-container">
+        <>
             <section className="chat-header">
                 <span className="chat-name">{selected}</span>
             </section>
@@ -78,8 +83,9 @@ const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
                     onChange={(e) => setMessageContent(e.target.value)} // Hantera ändring av meddelandet
                 />
                 <button className="send-button" onClick={handleSendMessage}>Skicka</button>
+                {error && <div className="error-message">{error}</div>}  {/* Visar felmeddelandet */}
             </section>
-        </div>
+        </>
     );
 };
 

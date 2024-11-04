@@ -1,23 +1,30 @@
 import Joi from "joi";
 
-// Inloggning 
+// Gemensam validering för användarnamn
+const usernameSchema = Joi.string().min(3).max(30).required();
+
+// Lösenordsvalidering
+const passwordSchema = Joi.string()
+    .min(6)
+    .pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*]{6,30}$'))
+    .required();
+
+// Inloggning
 const loginSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
-    password: Joi.string().min(6).required(),
+    username: usernameSchema,
+    password: passwordSchema,
 });
 
 // Registrering
 const registerSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
-    password: Joi.string().min(6).required(),
+    username: usernameSchema,
+    password: passwordSchema,
 });
 
-// Användarnamn
-const usernameSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+const channelSchema = Joi.object({
+    name: Joi.string().min(1).required(),
+    isPrivate: Joi.boolean().required()
 });
-
-
 
 
 // meddelande
@@ -28,4 +35,4 @@ const messageSchema = Joi.object({
 });
 
 
-export { loginSchema, registerSchema, usernameSchema, messageSchema };
+export { loginSchema, registerSchema, usernameSchema,channelSchema, messageSchema };

@@ -90,14 +90,12 @@ router.get('/protected', async (req: Request, res: Response) => {
         if (user) {
             // Hämta användarens namn
             const username = user.username; 
-
-            if (user) {
-                const username = user.username;
-                const messages = await getDB().collection('messages').find({
-                    $or: [
-                        { senderName: username, recipientName: otherUsername },
-                        { senderName: otherUsername, recipientName: username }
-                    ]
+        
+            const messages = await getDB().collection('messages').find({ 
+                $or: [
+                    { senderName: username, recipientName: otherUsername },
+                    { senderName: otherUsername, recipientName: username }
+                ]
             })
             .sort({ timestamp: 1 }) // Sortera meddelanden efter tid
             .toArray();
@@ -110,7 +108,7 @@ router.get('/protected', async (req: Request, res: Response) => {
             // 404: Not Found
             res.status(404).json({ error: 'User not found' });
         }
-    } 
+        
     } catch (error) {
         // 401: Unauthorized
         console.error('Error verifying token or fetching user/messages:', error);

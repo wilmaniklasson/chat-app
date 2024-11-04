@@ -98,3 +98,11 @@ body {
 .login-form .message.error {
     color: red;
 }
+
+.loading-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #6200ea;
+}

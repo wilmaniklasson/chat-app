@@ -13,6 +13,8 @@ const Guest: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    
   
 
     // Logga ut
@@ -36,8 +38,10 @@ const Guest: React.FC = () => {
                 // Hämta användarnamn från localStorage
                 const storedUsername = localStorage.getItem('username');
                 setUsername(storedUsername); 
+                setError(null); // Återställ felmeddelandet om allt gick bra
 
             } catch (error) {
+                setError(error instanceof Error ? error.message : 'Ett oväntat fel inträffade'); // Sätt felmeddelande
                 console.error('Fel vid hämtning av data:', error);
             }
         };
@@ -113,8 +117,13 @@ const Guest: React.FC = () => {
                         <li className="nav-item"><hr /></li>  
                     </ul>
                 </nav>
-               
-                    <GuestChat selected={selected} messages={messages} setMessages={setMessages}/>
+                <section className='chat-container'>
+                    <GuestChat selected={selected} messages={messages} setMessages={setMessages} />
+                    {/* Visa felmeddelande om det finns */}
+                    {error && <div className="error-message">{error}</div>}
+                </section>
+
+                  
                 
 
                 
