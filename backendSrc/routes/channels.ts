@@ -47,36 +47,35 @@ router.get('/name/:name', async (req: Request, res: Response) => {
 
 });
 // Route för att posta en ny kanal
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
     const { name, isPrivate } = req.body;
 
     // Om name saknas
     if (!name) {
         res.status(400).json({ error: 'Channel name is required' });
-    } else {
-        try {
+        return;
+    }
 
-            const existingChannel = await getDB().collection('channels').findOne({ name });
-            if (existingChannel) {
-                // 409: Conflict
-                res.status(409).json({ error: 'Channel already exists' });
-                return;
-            } else {
-            // Skapa ett nytt kanalobjekt
-            const newChannel = { name, isPrivate };
-            const result = await getDB().collection('channels').insertOne(newChannel);
-            // 201: Created
-            res.status(201).json({ message: 'Channel created', channelId: result.insertedId });
+    try {
+        const db = getDB();
+        const existingChannel = await db.collection('channels').findOne({ name });
+
+        if (existingChannel) {
+            // 409: Conflict
+            res.status(409).json({ error: 'Channel already exists' });
+            return;
         }
-        } catch (error) {
-            // 500: Internal Server Error
-            console.error('Error creating channel:', error);
-            res.status(500).json({ error: 'Failed to create channel' });
-        }
+        // Skapa ett nytt kanalobjekt
+        const newChannel = { name, isPrivate };
+        const result = await db.collection('channels').insertOne(newChannel);
+
+        // 201: Created
+        res.status(201).json({ message: 'Channel created', channelId: result.insertedId });
+    } catch (error) {
+        // 500: Internal Server Error
+        console.error('Error creating channel:', error);
+        res.status(500).json({ error: 'Failed to create channel' });
     }
 });
-
-
-
 
 export default router;

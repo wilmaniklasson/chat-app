@@ -124,6 +124,17 @@
 }
 
 .logut-button {
+    background-color: #22bd68;
+    color: #ffffff; 
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+
+.Delete-btn {
     background-color: #f83159;
     color: #ffffff; 
     border: none;
@@ -249,5 +260,36 @@ input[type="checkbox"] {
     cursor: pointer; 
     scale: 1.1;
    
+}
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    button {
+        padding: 10px 20px;
+        background-color: #4b4b4b;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px;
+    }
 }
 

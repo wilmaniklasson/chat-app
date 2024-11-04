@@ -3,7 +3,7 @@ import { getDB } from '../dbConnection.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb';
-import { loginSchema, registerSchema, usernameSchema, deleteSchema } from '../Validete.js';
+import { loginSchema, registerSchema, usernameSchema } from '../Validete.js';
 
 dotenv.config(); // Ladda in miljövariabler från .env-filen
 
@@ -145,23 +145,12 @@ router.get('/username/:username', async (req: Request, res: Response) => {
     }
 });
 
-
-// Ta bort användare
 router.delete('/delete', async (req: Request, res: Response) => {
-
     const token = req.headers.authorization?.split(' ')[1];
-   
 
     // Kontrollera så att token inte saknas
     if (!token) {
-        // 401: Unauthorized
         res.status(401).json({ error: 'No token provided' });
-        return;
-    }
-
-    const { error } = deleteSchema.validate(req.body);
-    if (error) {
-        res.status(400).json({ error: error.details[0].message });
         return;
     }
 
@@ -181,11 +170,11 @@ router.delete('/delete', async (req: Request, res: Response) => {
             res.json({ message: 'User successfully deleted' });
         }
     } catch (error) {
-        // 401: Unauthorized
         console.error('Error verifying token or deleting user:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
 });
+
 
 
 

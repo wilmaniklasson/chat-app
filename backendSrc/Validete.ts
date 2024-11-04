@@ -17,10 +17,7 @@ const usernameSchema = Joi.object({
     username: Joi.string().min(3).max(30).required(),
 });
 
-// Radering
-const deleteSchema = Joi.object({
-    id: Joi.string().required(),
-});
+
 
 
 // meddelande
@@ -31,4 +28,4 @@ const messageSchema = Joi.object({
 });
 
 
-export { loginSchema, registerSchema, usernameSchema, deleteSchema, messageSchema };
+export { loginSchema, registerSchema, usernameSchema, messageSchema };

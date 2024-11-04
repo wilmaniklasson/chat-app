@@ -6,6 +6,7 @@ import { Message } from '../../backendSrc/interface/message';
 import { FaUnlock } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import Chat from './Chat';
+import DeleteUserButton from './DeleteUserButton';
 
 // Home-komponenten
 const Home: React.FC = () => {
@@ -15,10 +16,11 @@ const Home: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
-    const [isPrivate, setisPrivate] = useState(false); 
+    const [isPrivate, setIsPrivate] = useState(false); 
+    const [channelName, setChannelName] = useState('');
 
     const handleCheckboxChange = () => {
-        setisPrivate(!isPrivate); // Växla mellan låst och upplåst
+        setIsPrivate(!isPrivate); // Växla mellan låst och upplåst
     };
   
 
@@ -125,7 +127,38 @@ const Home: React.FC = () => {
     };
     
 
-    //lägg till kanal 
+    const addChannel = async () => {
+        try {
+            const response = await fetch('/api/channels', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: channelName, isPrivate }),
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Fel status:', response.status, 'Respons:', errorText);
+                throw new Error('Kunde inte skapa kanal');
+            }
+    
+            // Hämta uppdaterad lista av kanaler efter att den nya kanalen skapats
+            const channelResponse = await fetch('/api/channels');
+            if (!channelResponse.ok) throw new Error('Kunde inte hämta kanaler');
+            
+            const channelsData = await channelResponse.json();
+            setChannels(channelsData); // Uppdaterar kanallistan med alla kanaler, inklusive den nya
+            
+            setChannelName(''); // Nollställ inputfältet efter att kanalen skapats
+        } catch (error) {
+            console.error('Fel vid skapande av kanal:', error);
+        }
+    };
+
+
+
+
     // ta bort användare 
     
     return (
@@ -135,6 +168,7 @@ const Home: React.FC = () => {
                 <div className="user-status-container">
                     {username && <span className="user-status-text">Inloggad som: {username}</span>}
                     <button onClick={handleLogUt} className="logut-button">Logga ut</button>
+                    <DeleteUserButton />
                 </div>
             </header>
 
@@ -152,7 +186,7 @@ const Home: React.FC = () => {
                                         fetchMessages(channel.name); // Hämta meddelanden
                                         }}>
                                     {channel.name}
-                                    {channel.isPrivate && <FaUnlock className="open-private-icon" />} 
+                                    {channel.isPrivate && <FaLock className="private-icon" />} 
                                 </button>
                             </li>
                         ))}
@@ -166,12 +200,29 @@ const Home: React.FC = () => {
                             />
                         </label>
 
-                            <input title="Skapa ny kanal" placeholder="Skapa ny kanal" />
-                            <button>Lägg till</button>
+                        <div>
+                            <input
+                                type="text"
+                                title="Skapa ny kanal"
+                                placeholder="Skapa ny kanal"
+                                value={channelName}
+                                onChange={(e) => setChannelName(e.target.value)}
+                            />
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={isPrivate}
+                                    onChange={(e) => setIsPrivate(e.target.checked)}
+                                />
+                            </label>
+                            <button onClick={addChannel}>Lägg till</button>
+                        </div>
                         </li>
                       
                         <li className="nav-item"><hr /></li>
-                        <h2 className="nav-item">DM</h2>
+                    </ul>
+                    <h2 className="nav-item">DM</h2>
+                    <ul className="nav-list">
                         {users.map(user => (
                             <li key={user._id} className="nav-item">
                                 <button 
