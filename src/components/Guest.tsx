@@ -5,23 +5,23 @@ import { Channel } from '../../backendSrc/interface/channel';
 import { Message } from '../../backendSrc/interface/message';
 import { FaLock } from 'react-icons/fa';
 import GuestChat from './GuestChat';
+import { useStore} from '../useStore'
 
 // Home-komponenten
 const Guest: React.FC = () => {
     const navigate = useNavigate();
+    const { username, setUsername } = useStore();
     const [channels, setChannels] = useState<Channel[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
-    const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     
   
 
-    // Logga ut
-    const handleLogUt = () => {
-        localStorage.removeItem('username');
-        navigate('/');
-    };
+    useEffect(() => {
+        setUsername('Gäst');
+    }, [setUsername]); 
+
 
 
     // Hämta data när komponenten laddas
@@ -79,6 +79,12 @@ const Guest: React.FC = () => {
         }
     };
     
+     // Logga ut
+     const handleLogUt = () => {
+        setUsername(null);
+        navigate('/');
+    };
+
     
     
     return (

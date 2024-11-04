@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Message } from '../../backendSrc/interface/message';
 import './Home.css';
+import { useStore} from '../useStore'
 
 interface ChatProps {
     selected: string | null;
@@ -34,9 +35,10 @@ const sendMessage = async (
 const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
     const [messageContent, setMessageContent] = useState('');
     const [error, setError] = useState(''); // State för felmeddelande
+    const { username } = useStore(); // Hämta användarnamnet från Zustand-storen
 
     const handleSendMessage = () => {
-        const senderName = localStorage.getItem('username'); 
+        const senderName = username;
         const recipientName = selected; // Kanal eller användare
 
         if (!messageContent.trim()) { // Kolla om meddelandet är tomt

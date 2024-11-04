@@ -7,32 +7,48 @@ import { FaUnlock } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import Chat from './Chat';
 import DeleteUserButton from './DeleteUserButton';
+import { useStore} from '../useStore'
 
 // Home-komponenten
 const Home: React.FC = () => {
     const navigate = useNavigate();
+    const { username, setUsername } = useStore();
     const [users, setUsers] = useState<{ _id: string; username: string; password: string }[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
-    const [username, setUsername] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
     const [isPrivate, setIsPrivate] = useState(false); 
     const [channelName, setChannelName] = useState('');
     const [error, setError] = useState<string>('');
 
 
-    const handleCheckboxChange = () => {
-        setIsPrivate(!isPrivate); // Växla mellan låst och upplåst
-    };
-  
-
-    // Logga ut
-    const handleLogUt = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        navigate('/');
-    };
-
+    useEffect(() => {
+        const fetchUsernameFromToken = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+    
+            try {
+                const response = await fetch('/api/users/get-username', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                
+                if (!response.ok) throw new Error('Kunde inte verifiera token');
+                const { username } = await response.json();
+                setUsername(username);
+                console.log(username)
+            } catch (error) {
+                console.error('Fel vid verifiering av token:', error);
+                setError((error as Error).message || 'Ett okänt fel inträffade');
+            }
+        };
+    
+        fetchUsernameFromToken();
+    }, [setUsername]);
+    
+    
 
     // Hämta data när komponenten laddas
     useEffect(() => {
@@ -50,16 +66,6 @@ const Home: React.FC = () => {
                 const channelsData = await channelResponse.json();
                 setChannels(channelsData);
 
-                // Hämta token från localStorage
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.error('Ingen token hittades');
-                    return;
-                }
-
-                // Hämta användarnamn från localStorage
-                const storedUsername = localStorage.getItem('username');
-                setUsername(storedUsername); 
 
             } catch (error) {
                 console.error('Fel vid hämtning av data:', error);
@@ -171,7 +177,17 @@ const Home: React.FC = () => {
 
 
 
-    // ta bort användare 
+    const handleCheckboxChange = () => {
+        setIsPrivate(!isPrivate); // Växla mellan låst och upplåst
+    };
+  
+
+    // Logga ut
+    const handleLogUt = () => {
+        localStorage.removeItem('token');
+        setUsername(null);
+        navigate('/');
+    };
     
     return (
         <>

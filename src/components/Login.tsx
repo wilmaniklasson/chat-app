@@ -42,7 +42,7 @@ const Login: React.FC = () => {
 
             // Spara token i localStorage
             localStorage.setItem('token', result.token );
-            localStorage.setItem('username', username);
+           
            
             setMessage('Inloggning lyckades!');
 

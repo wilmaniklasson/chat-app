@@ -217,5 +217,42 @@ router.post('/register', async (req: Request, res: Response) => {
     }
 });
 
+// Rutt för att hämta användarnamn
+router.get('/get-username', async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        // 401: Unauthorized
+        res.status(401).json({ error: 'No token provided' });
+        return 
+    }
+
+    try {
+        // Verifiera token och få användarens ID
+        const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+        const _id = payload.id; // Hämta ID från payload
+
+        // Hämta användaren från databasen
+        const user = await getDB().collection('users').findOne({ _id: new ObjectId(_id) });
+        console.log('User from database:', user);
+
+        if (user) {
+            // Hämta användarens namn
+            const username = user.username;
+            
+            // Returnera endast användarnamnet
+            res.json({ username });
+        } else {
+            // 404: Not Found
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        // 401: Unauthorized
+        console.error('Error verifying token or fetching user:', error);
+        res.status(401).json({ error: 'Invalid token' });
+    }
+});
+
+
 export default router;
 
