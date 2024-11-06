@@ -12,7 +12,6 @@ const Signup: React.FC = () => {
         e.preventDefault();
     
         const data = { username, password }; // Samla in användarnamn och lösenord
-        console.log('Skickar data till server:', JSON.stringify(data)); // Logga data som skickas
     
         try {
             const response = await fetch('/api/users/register', {
@@ -23,7 +22,6 @@ const Signup: React.FC = () => {
                 body: JSON.stringify(data), // Konvertera data till JSON-sträng
             });
     
-            console.log('Response status:', response.status); // Loggar status
             
             // Är svaret ok?
             if (!response.ok) {
@@ -34,7 +32,6 @@ const Signup: React.FC = () => {
     
             // Hämta JSON datan från svaret
             const result = await response.json();
-            console.log('Inloggad:', result);
 
             // Spara token i localStorage
             localStorage.setItem('token', result.token);

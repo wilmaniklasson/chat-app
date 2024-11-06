@@ -24,12 +24,9 @@ export async function connectDB() {
         // Ansluter till MongoDB
         await client.connect();
 
-        // Loggar att anslutningen har lyckats
-        console.log('Connected to MongoDB');
-
         // Väljer databasen i detta fall chappy
         db = client.db(dbName);
-        console.log(`selected database: ${dbName}`);
+
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
     }

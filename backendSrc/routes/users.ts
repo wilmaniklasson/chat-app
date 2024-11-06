@@ -28,7 +28,7 @@ router.get('/', async (req: Request, res: Response) => {
         
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error.message);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
@@ -43,7 +43,6 @@ router.post('/login', async (req: Request, res: Response) => {
         res.status(400).json({ error: error.details[0].message });
         return;
     }
-    console.log('Login request received:', req.body);
     const { username, password }: { username: string; password: string } = req.body;
     try {
         // leta efter användaren i databasen
@@ -62,13 +61,13 @@ router.post('/login', async (req: Request, res: Response) => {
         }
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error during login:', error);
+        console.error('Error during login:', error.message);
         res.status(500).json({ error: 'Login failed' });
     }
 });
 
 
-
+// Hämtar meddelanden mellan den inloggade användaren och vald användare
 router.get('/protected', async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];
     const { username: otherUsername } = req.query;
@@ -85,7 +84,6 @@ router.get('/protected', async (req: Request, res: Response) => {
 
         // Hämta användaren från databasen
         const user = await getDB().collection('users').findOne({ _id: new ObjectId(_id) });
-        console.log('User from database:', user);
         
         if (user) {
             // Hämta användarens namn
@@ -100,7 +98,6 @@ router.get('/protected', async (req: Request, res: Response) => {
             .sort({ timestamp: 1 }) // Sortera meddelanden efter tid
             .toArray();
             
-            console.log('Messages:', messages);
             
             // Returnera både användarinformation och meddelanden
             res.json({ user, messages });
@@ -111,37 +108,13 @@ router.get('/protected', async (req: Request, res: Response) => {
         
     } catch (error) {
         // 401: Unauthorized
-        console.error('Error verifying token or fetching user/messages:', error);
+        console.error('Error verifying token or fetching user/messages:', error.message);
         res.status(401).json({ error: 'Invalid token' });
     }
 });
 
 
-// Hämta användare med ett visst användarnamn
-router.get('/username/:username', async (req: Request, res: Response) => {
-    const { error } = usernameSchema.validate(req.params); 
-    if (error) {
-        res.status(400).json({ error: error.details[0].message });
-        return;
-    }
-    const username = req.params.username;
-    try {
-        const user = await getDB().collection('users').findOne({
-            username
-        });
-        if (!user) {
-            // 404: Not Found
-            res.status(404).json({ error: 'User not found' });
-        } else {
-            // JSON
-            res.json(user);
-        }
-    } catch (error) {
-        // 500: Internal Server Error
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Failed to fetch user' });
-    }
-});
+
 
 router.delete('/delete', async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];

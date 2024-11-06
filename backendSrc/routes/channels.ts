@@ -19,7 +19,8 @@ router.get('/', async (req: Request, res: Response) => {
         }
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching channels:', error);
+        console.error('Error fetching channels:', error.message);
+
         res.status(500).json({ error: 'Failed to fetch channels' });
     }
 });
@@ -41,7 +42,7 @@ router.get('/name/:name', async (req: Request, res: Response) => {
         }
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching channel:', error);
+        console.error('Error fetching channel:', error.message);
         res.status(500).json({ error: 'Failed to fetch channel' });
     }
 
@@ -76,7 +77,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         res.status(201).json({ message: 'Channel created', channelId: result.insertedId });
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error creating channel:', error);
+        console.error('Error creating channel:', error.message);
         res.status(500).json({ error: 'Failed to create channel' });
     }
 });

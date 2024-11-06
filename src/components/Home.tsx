@@ -38,7 +38,6 @@ const Home: React.FC = () => {
                 if (!response.ok) throw new Error('Kunde inte verifiera token');
                 const { username } = await response.json();
                 setUsername(username);
-                console.log(username)
             } catch (error) {
                 console.error('Fel vid verifiering av token:', error);
                 setError((error as Error).message || 'Ett okänt fel inträffade');

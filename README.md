@@ -23,7 +23,7 @@ Chappy API tillhandahåller ett enkelt gränssnitt för att hantera användare, 
 Klona repositoryt:
 
 ```bash
-git clone https://github.com/your-username/chappy-api.git
+git clone https://github.com/wilmaniklasson/chat-app.git
 cd chappy-api
 ```
 
@@ -39,9 +39,10 @@ Se till att du har en .env-fil i projektets rotkatalog:
 CONNECTION_STRING=mongodb+srv://<användarnamn>:<lösenord>@kluster0.oiln8.mongodb.net/
 MONGODB_DB_NAME=chappy
 PORT=2412
+JWT_SECRET=<Hämligt>
 ```
 
-Ersätt `<användarnamn>` och `<lösenord>` med dina MongoDB-uppgifter.
+Ersätt `<användarnamn>` , `<lösenord>` med dina MongoDB-uppgifter, och `<Hämligt>` med din JWT secret.
 
 Starta utvecklingsservern:
 
@@ -57,32 +58,307 @@ Databasmodellen innehåller tre huvudsakliga collections: **Users**, **Messages*
 
 ## API Endpoints
 
+Absolut! Här är några förslag på hur rubrikerna kan se ut, med tydligare uppdelning av HTTP-statuskoder och svar för varje endpoint:
+
+---
+
+## API Endpoints
+
 ### Användare
 
-Dokumenterar API-endpunkterna relaterade till användare.
+#### Registrera användare
+
+- **Endpoint:** `POST /register`
+- **Body:**
+  ```json
+  {
+    "username": "user123",
+    "password": "securePassword"
+  }
+  ```
+- **Svar:**
+  - **201 Created**
+    - Body:
+      ```json
+      {
+        "message": "User created",
+        "token": "<JWT_TOKEN>",
+        "username": "user123"
+      }
+      ```
+  - **409 Conflict**
+    - Body:
+      ```json
+      {
+        "error": "Username already exists"
+      }
+      ```
+
+---
+
+#### Logga in
+
+- **Endpoint:** `POST /login`
+- **Body:**
+  ```json
+  {
+    "username": "user123",
+    "password": "securePassword"
+  }
+  ```
+- **Svar:**
+  - **200 OK**
+    - Body:
+      ```json
+      {
+        "_id": "<user_id>",
+        "username": "user123",
+        "token": "<JWT_TOKEN>"
+      }
+      ```
+  - **401 Unauthorized**
+    - Body:
+      ```json
+      {
+        "error": "Invalid username or password"
+      }
+      ```
+
+---
+
+#### Hämta alla användare
+
+- **Endpoint:** `GET /users`
+- **Svar:**
+  - **200 OK**
+    - Body:
+      ```json
+      [
+        {
+          "_id": "<user_id>",
+          "username": "user123"
+        }
+      ]
+      ```
+  - **404 Not Found**
+    - Body:
+      ```json
+      {
+        "error": "No users found"
+      }
+      ```
+
+---
+
+#### Hämta meddelanden mellan användare
+
+- **Endpoint:** `GET /messages?username=<other_username>`
+- **Header:**
+  ```
+  Authorization: Bearer <JWT_TOKEN>
+  ```
+- **Svar:**
+  - **200 OK**
+    - Body:
+      ```json
+      {
+        "user": {
+          "_id": "<user_id>",
+          "username": "user123"
+        },
+        "messages": [
+          {
+            "senderName": "user123",
+            "recipientName": "otherUser",
+            "content": "Hello!",
+            "timestamp": "2024-11-04T00:00:00Z"
+          }
+        ]
+      }
+      ```
+  - **401 Unauthorized**
+    - Body:
+      ```json
+      {
+        "error": "Invalid token"
+      }
+      ```
+
+---
+
+#### Ta bort användare
+
+- **Endpoint:** `DELETE /users`
+- **Header:**
+  ```
+  Authorization: Bearer <JWT_TOKEN>
+  ```
+- **Svar:**
+  - **200 OK**
+    - Body:
+      ```json
+      {
+        "message": "User successfully deleted"
+      }
+      ```
+  - **404 Not Found**
+    - Body:
+      ```json
+      {
+        "error": "User not found"
+      }
+      ```
+  - **401 Unauthorized**
+    - Body:
+      ```json
+      {
+        "error": "Invalid token"
+      }
+      ```
+
+---
+
+#### Hämta användarnamn
+
+- **Endpoint:** `GET /users/username`
+- **Header:**
+  ```
+  Authorization: Bearer <JWT_TOKEN>
+  ```
+- **Svar:**
+  - **200 OK**
+    - Body:
+      ```json
+      {
+        "username": "user123"
+      }
+      ```
+  - **401 Unauthorized**
+    - Body:
+      ```json
+      {
+        "error": "Invalid token"
+      }
+      ```
 
 ---
 
 ### Meddelanden
 
-Dokumenterar API-endpunkterna relaterade till meddelanden.
+#### Hämta meddelanden i en specifik kanal
+
+- **Endpoint:** `GET /api/messages/channel/:channelName`
+- **Svar:**
+  - **200 OK**
+    - Body: Lista över meddelanden i den specifika kanalen
+  - **404 Not Found**
+    - Body:
+      ```json
+      {
+        "error": "No messages found for the specified channel"
+      }
+      ```
+  - **500 Internal Server Error**
+    - Body:
+      ```json
+      {
+        "error": "An error occurred while retrieving messages"
+      }
+      ```
+
+---
+
+#### Skicka ett meddelande
+
+- **Endpoint:** `POST /api/messages`
+- **Body:**
+  ```json
+  {
+    "senderName": "user1",
+    "recipientName": "user2",
+    "content": "Hi there!"
+  }
+  ```
+- **Svar:**
+  - **201 Created**
+    - Body: Alla meddelanden för mottagaren efter skickat meddelande
+  - **400 Bad Request**
+    - Body:
+      ```json
+      {
+        "error": "Invalid recipient name"
+      }
+      ```
+  - **500 Internal Server Error**
+    - Body:
+      ```json
+      {
+        "error": "An error occurred while sending the message"
+      }
+      ```
 
 ---
 
 ### Kanaler
 
-Dokumenterar API-endpunkterna relaterade till kanaler.
+#### Skapa en ny kanal
+
+- **Endpoint:** `POST /api/channels`
+- **Body:**
+  ```json
+  {
+    "name": "new_channel",
+    "isPrivate": false
+  }
+  ```
+- **Svar:**
+  - **201 Created**
+    - Body: Detaljer om den skapade kanalen
+  - **400 Bad Request**
+    - Body:
+      ```json
+      {
+        "error": "Invalid channel data"
+      }
+      ```
+  - **409 Conflict**
+    - Body:
+      ```json
+      {
+        "error": "Channel already exists"
+      }
+      ```
 
 ---
 
-### Autentisering
+#### Hämta alla kanaler
 
-Dokumenterar API-endpunkterna relaterade till autentisering, inklusive registrering och inloggning.
+- **Endpoint:** `GET /api/channels`
+- **Svar:**
+  - **200 OK**
+    - Body: Lista över alla kanaler
+  - **404 Not Found**
+    - Body:
+      ```json
+      {
+        "error": "No channels found"
+      }
+      ```
 
 ---
 
-## Exempel på begäran och svar
+#### Hämta en specifik kanal
 
-Denna sektion innehåller exempel på hur man gör begärningar till API:t och vilka svar man kan förvänta sig.
+- **Endpoint:** `GET /api/channels/name/:name`
+- **Svar:**
+  - **200 OK**
+    - Body: Detaljer om kanalen
+  - **404 Not Found**
+    - Body:
+      ```json
+      {
+        "error": "Channel not found"
+      }
+      ```
 
 ---

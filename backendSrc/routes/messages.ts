@@ -6,24 +6,6 @@ import { Message } from '../interface/message.js';
 
 const router = express.Router();
 
-// Route för att hämta alla meddelanden
-router.get('/', async (req: Request, res: Response) => {
-    try {
-        const messages = await getDB().collection('messages').find().toArray();
-        // 404: Not Found
-        if (messages.length === 0) {
-            res.status(404).json({ error: 'No messages found' });
-        }else{
-            // JSON
-        res.json(messages);
-        }
-    } catch (error) {
-        // 500: Internal Server Error
-        console.error('Error fetching messages:', error);
-        res.status(500).json({ error: 'Failed to fetch messages' });
-    }
-});
-
 
 // Route för att hämta alla meddelanden i en specifik kanal
 router.get('/channel/:channelName', async (req: Request, res: Response) => {
@@ -39,7 +21,7 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
         res.json(messages.length > 0 ? messages : []); // Returnera tom array om inga meddelanden hittades
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching messages for channel:', error);
+        console.error('Error fetching messages for channel:', error.message);
         res.status(500).json({ error: 'Failed to fetch messages for channel' });
     }
 });
@@ -97,7 +79,7 @@ router.post('/', async (req: Request<{}, {}, Message>, res: Response) => {
 
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error sending message:', error);
+        console.error('Error sending message:', error.message);
         res.status(500).json({ error: 'Failed to send message' });
     }
 });
