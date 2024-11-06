@@ -28,7 +28,7 @@ router.get('/', async (req: Request, res: Response) => {
         
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching users:', error.message);
+        console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
@@ -61,7 +61,7 @@ router.post('/login', async (req: Request, res: Response) => {
         }
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error during login:', error.message);
+        console.error('Error during login:', error);
         res.status(500).json({ error: 'Login failed' });
     }
 });
@@ -108,7 +108,7 @@ router.get('/protected', async (req: Request, res: Response) => {
         
     } catch (error) {
         // 401: Unauthorized
-        console.error('Error verifying token or fetching user/messages:', error.message);
+        console.error('Error verifying token or fetching user/messages:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
 });

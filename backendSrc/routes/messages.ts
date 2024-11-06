@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { getDB } from '../dbConnection.js';
 import { messageSchema } from '../Validete.js';
 import { Message } from '../interface/message.js';
+import { WithId, Document} from 'mongodb';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get('/channel/:channelName', async (req: Request, res: Response) => {
         res.json(messages.length > 0 ? messages : []); // Returnera tom array om inga meddelanden hittades
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error fetching messages for channel:', error.message);
+        console.error('Error fetching messages for channel:', error);
         res.status(500).json({ error: 'Failed to fetch messages for channel' });
     }
 });
@@ -47,8 +48,9 @@ router.post('/', async (req: Request<{}, {}, Message>, res: Response) => {
         // Är recipientName är en kanal
         const isChannel = await getDB().collection('channels').findOne({ name: recipientName });
         
-        // Är recipientName är en användare med ett username
-        let isUser = null;
+        // isUser kan va ett MongoDB-dokument med ID eller null
+        let isUser: WithId<Document> | null = null;
+
         if (!isChannel) {
             isUser = await getDB().collection('users').findOne({ username: recipientName });
         }
@@ -79,7 +81,7 @@ router.post('/', async (req: Request<{}, {}, Message>, res: Response) => {
 
     } catch (error) {
         // 500: Internal Server Error
-        console.error('Error sending message:', error.message);
+        console.error('Error sending message:', error);
         res.status(500).json({ error: 'Failed to send message' });
     }
 });
