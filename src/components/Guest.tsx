@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../backendSrc/interface/channel';
 import { Message } from '../../backendSrc/interface/message';
 import { FaLock } from 'react-icons/fa';
-import GuestChat from './GuestChat';
 import { useStore} from '../useStore'
+import Chat from './Chat';
 
 // Home-komponenten
 const Guest: React.FC = () => {
@@ -124,9 +124,9 @@ const Guest: React.FC = () => {
                     </ul>
                 </nav>
                 <section className='chat-container'>
-                    <GuestChat selected={selected} messages={messages} setMessages={setMessages} />
-                    {/* Visa felmeddelande om det finns */}
-                    {error && <div className="error-message">{error}</div>}
+                    {error && <div className="error-message">{error}</div>}  {/* Visar felmeddelandet */}
+                    <Chat selected={selected} messages={messages} setMessages={setMessages}/>
+                
                 </section>
 
                   

@@ -76,9 +76,9 @@ router.post('/', async (req: Request<{}, {}, Message>, res: Response) => {
          .sort({ timestamp: 1 })
          .toArray();
 
-     // Returnera alla meddelanden i chatten
-     res.status(201).json(messages);
-
+        // Returnera endast det nya meddelandet
+        res.status(201).json(newMessage);
+     
     } catch (error) {
         // 500: Internal Server Error
         console.error('Error sending message:', error);

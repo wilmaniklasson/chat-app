@@ -25,12 +25,13 @@ const sendMessage = async (
         });
 
         if (!response.ok) throw new Error('Kunde inte skicka meddelande');
-        const updatedMessages = await response.json(); // Hämta uppdaterade meddelanden
-        setMessages(updatedMessages); // Uppdatera meddelandelistan i state
+     
+        const newMessage = await response.json(); // Få det nya meddelandet
+        setMessages((prevMessages) => [...prevMessages, newMessage]); // Lägg till det nya meddelandet i listan
     } catch (error) {
         console.error('Fel vid skickande av meddelande:', error);
     }
-}
+};
 
 const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
     const [messageContent, setMessageContent] = useState('');
@@ -67,7 +68,7 @@ const Chat: React.FC<ChatProps> = ({ selected, messages, setMessages }) => {
                     <p className="no-messages">Inga meddelanden ännu.</p>
                 ) : (
                     messages.map(message => (
-                        <section key={message._id.toString()} className="chat-message">
+                        <section key={message._id ? message._id.toString() : 'default-key'} className="chat-message">
                             <p>{message.senderName}:</p>
                             <p className='text'>{message.content}</p>
                             <p className='time'>{new Date(message.timestamp).toLocaleTimeString()}</p>
